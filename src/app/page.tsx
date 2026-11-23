@@ -1,103 +1,119 @@
-import Image from "next/image";
+import Hero from "@/components/Hero";
+import ChapterIndex from "@/components/ChapterIndex";
+import { ChapterOpener, Subsection, FeatureList, Tagline, Reveal } from "@/components/Chapter";
+import { WordCloud, ScoreMeter, CostBars, Funnel, ScanReveal, GlowCards, StatPanel } from "@/components/Visuals";
+import { person, about, novafocus, projects, toolkit, education, art } from "@/content/site";
+import { aboutScene } from "@/content/aboutScene";
+
+// Category names from the classify taxonomy, floating in the "Domains, classified" beat.
+const CATEGORIES = [
+  "Social Networks", "Video Streaming", "Online Shopping", "Casino & Betting", "News", "Banking",
+  "Forums & Communities", "AI Tools", "Education", "Cloud & Hosting", "Phishing", "Dating",
+  "Music & Audio", "Search Engines", "Marketplaces", "Cryptocurrency", "Travel", "Sports",
+];
+
+const visualFor = {
+  site: <StatPanel stats={[{ value: 70, suffix: "K", label: "search impressions a day" }]} note="Next.js · Sanity CMS" />,
+  extension: <StatPanel stats={[{ value: 20, suffix: "K+", label: "users" }]} note="Chrome Web Store" />,
+  cloud: <WordCloud words={CATEGORIES} />,
+  meter: <ScoreMeter />,
+  bars: <CostBars />,
+  funnel: <Funnel />,
+  scan: <ScanReveal src={art.pearlEarring.color} />,
+  cards: <GlowCards />,
+};
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <main>
+      <ChapterIndex />
+      <Hero />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* I · About: its painting tears in under the hero, then the page. */}
+      <section id="about">
+        <ChapterOpener title="About" tagline={about.intro} scene={aboutScene} from="image" seed={29} />
+        <div className="bg-paper px-6 py-[14vh] md:pl-[16rem] md:pr-12">
+          <div className="grid gap-12 md:grid-cols-12">
+            <Reveal className="md:col-span-7">
+              <h3 className="text-[clamp(34px,4vw,60px)] leading-[1.02] text-ink"><Tagline text={about.heading} /></h3>
+              <div className="mt-10">
+                {about.paragraphs.map((text) => (
+                  <p key={text.slice(0, 24)} className="mb-5 max-w-2xl font-serif text-[clamp(18px,1.4vw,22px)] leading-[1.4] text-ink/90">{text}</p>
+                ))}
+              </div>
+            </Reveal>
+            <Reveal className="md:col-span-5 md:pt-4">
+              <dl className="border-t border-ink/15">
+                {about.facts.map(([label, value]) => (
+                  <div key={label} className="grid grid-cols-[110px_1fr] gap-4 border-b border-ink/15 py-4">
+                    <dt className="font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-ink/50">{label}</dt>
+                    <dd className="font-display text-[14px] font-semibold text-ink">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <div className="mt-8 flex flex-wrap gap-3 font-display text-[13px]">
+                <a href="/Arpit_Ray_Resume.pdf" className="rounded-full bg-magenta px-4 py-2 text-white hover:bg-ink">Résumé ↗</a>
+                <a href={person.links.github} target="_blank" rel="noreferrer" className="rounded-full border border-ink/20 px-4 py-2 text-ink hover:bg-ink hover:text-paper">GitHub ↗</a>
+                <a href={person.links.linkedin} target="_blank" rel="noreferrer" className="rounded-full border border-ink/20 px-4 py-2 text-ink hover:bg-ink hover:text-paper">LinkedIn ↗</a>
+              </div>
+            </Reveal>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </section>
+
+      {/* II · NovaFocus */}
+      <section id="novafocus">
+        <ChapterOpener title={novafocus.title} tagline={novafocus.tagline} art={novafocus.art} drawn={false} blurNote={novafocus.blurNote} seed={13} />
+        <div className="bg-paper px-6 md:pl-[16rem] md:pr-12">
+          {novafocus.subsections.map((s) => (
+            <Subsection key={s.tagline} {...s} visual={visualFor[s.visual]} />
+          ))}
+          <FeatureList heading="Also shipped" items={novafocus.alsoShipped} />
+        </div>
+      </section>
+
+      {/* III · Projects */}
+      <section id="projects">
+        <ChapterOpener title={projects.title} tagline={projects.tagline} art={projects.art} seed={41} />
+        <div className="bg-paper px-6 md:pl-[16rem] md:pr-12">
+          {projects.featured.map((p) => (
+            <Subsection key={p.label} {...p} />
+          ))}
+          <FeatureList heading="Also built" items={projects.alsoBuilt} />
+        </div>
+      </section>
+
+      {/* IV · Toolkit */}
+      <section id="toolkit" className="bg-paper px-6 py-[12vh] md:pl-[16rem] md:pr-12">
+        <h2 className="font-display text-[clamp(56px,10vw,160px)] font-bold leading-[0.85] tracking-[-0.04em] text-ink">Toolkit</h2>
+        <WordCloud words={toolkit} tall />
+      </section>
+
+      {/* V · Education */}
+      <section id="education" className="bg-paper px-6 pb-[14vh] md:pl-[16rem] md:pr-12">
+        <Reveal className="border-t border-ink/15 pt-16">
+          <h3 className="text-[clamp(34px,4vw,60px)] leading-none text-ink"><Tagline text="Education" /></h3>
+          <p className="mt-8 font-display text-[14px] font-semibold text-ink">{education.school} · {education.degree} · {education.years}</p>
+          <p className="mt-2 font-serif text-[20px] text-ink/90">{education.detail}</p>
+        </Reveal>
+      </section>
+
+      {/* VI · Contact */}
+      <section id="contact">
+        <ChapterOpener title="Contact" tagline="Let’s build something worth measuring." art={art.pearlEarring} seed={67} />
+        <div className="bg-paper px-6 py-[12vh] md:pl-[16rem] md:pr-12">
+          <a href={`mailto:${person.email}`} className="font-display text-[clamp(28px,4vw,64px)] font-bold tracking-[-0.03em] text-ink underline decoration-magenta decoration-4 underline-offset-8">
+            {person.email}
+          </a>
+          <div className="mt-10 flex flex-wrap gap-3 font-display text-[13px]">
+            {Object.entries(person.links).map(([name, href]) => (
+              <a key={name} href={href} target="_blank" rel="noreferrer" className="rounded-full border border-ink/20 px-4 py-2 capitalize text-ink hover:bg-ink hover:text-paper">{name} ↗</a>
+            ))}
+            <a href="/Arpit_Ray_Resume.pdf" className="rounded-full bg-magenta px-4 py-2 text-white">Download résumé</a>
+          </div>
+          <p className="mt-24 font-display text-[11px] text-ink/50">Paintings: Johannes Vermeer, public domain (via Wikimedia Commons).</p>
+        </div>
+      </section>
+    </main>
   );
 }

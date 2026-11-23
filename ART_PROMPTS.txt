@@ -1,0 +1,300 @@
+PORTFOLIO ART - IMAGE GENERATION PROMPTS
+========================================
+
+The idea: classical oil paintings with modern objects in them (laptop, phone, charts), like
+the reference site. Each scene is NOT one picture. It is generated as separate layers, so on
+scroll the layers can come apart: the figure drifts forward, objects float off, the background
+stays behind. If a scene is generated as one flat image, it cannot do that.
+
+
+1. HOW EVERY SCENE IS BUILT (4 kinds of layer)
+----------------------------------------------
+  L0  BACKGROUND PLATE   the room or landscape with NOBODY in it, full frame, 16:9.
+                         It must be fully painted behind where the figure will stand,
+                         because the figure moves and the area behind it shows.
+  L1  FIGURE             the person alone, cut out (transparent background), full body
+                         or the part that is visible in the scene.
+  L2  FOREGROUND         the nearest things (a table edge, drapery, plants), cut out.
+                         They frame the scene and move the most.
+  L3  OBJECTS            each modern object alone, cut out, one file per object
+                         (laptop, phone, mug, chart, badge...). These are what float away.
+
+Same light in every layer of a scene: the light direction is written in each prompt; keep it.
+
+
+2. STYLE BLOCK (paste at the end of EVERY prompt)
+-------------------------------------------------
+  Style: original classical oil painting of a quiet 1660s European interior, soft natural
+  window light from the upper left, warm ochre, deep ultramarine and muted green palette,
+  fine visible brushwork, subtle canvas texture, realistic proportions, highly detailed,
+  calm and dignified mood.
+
+  Modern objects are painted in the SAME oil-paint style (not photoreal, not glossy 3D).
+  One accent colour only: hot magenta (#FF2E88).
+
+  IMPORTANT: never name a real painter or a real painting in a prompt (no "Vermeer", no
+  "The Geographer", no "in the style of ..."). Image tools refuse those as copying third-party
+  work ("similarity to third-party content"). The scene titles in this file are only notes
+  for us; do not paste them.
+
+NEGATIVE (paste into the negative-prompt field, or end the prompt with "Avoid: ..."):
+  Avoid: text, letters, logos, watermark, signature, frame, border, photograph, 3D render,
+  plastic look, cartoon, anime, extra fingers, distorted hands, blurry, low resolution,
+  cropped head, multiple people (unless asked), modern clothing (unless asked).
+
+CUT-OUT LAYERS (L1, L2, L3), add this:
+  Isolated on a transparent background (PNG with alpha). If the tool cannot do transparency:
+  "isolated on a flat pure #00FF00 green background, no shadow on the background", then
+  remove the green afterwards (remove.bg, Photoshop "Remove background", or rembg).
+
+Tools that work well:
+  - GPT-image (ChatGPT / OpenAI API): supports "transparent background" directly.
+  - Midjourney: best paint quality; no transparency, so use the green background trick.
+    Use --ar for aspect ratio, --style raw, and --sref <your L0 image URL> on every layer
+    of a scene so all layers share one look.
+  - Recraft / Ideogram: also export transparent PNGs.
+
+
+3. YOUR FACE IN THE PAINTINGS (optional but recommended)
+--------------------------------------------------------
+For the hero figure to be you: give the tool 2-3 clear photos of your face as a character
+reference (Midjourney: --cref <photo URL> --cw 60; GPT-image: attach the photo and say
+"the man's face is based on the attached photo, painted in the style described"). Use the same
+reference for every scene where "the scholar" appears, so he looks like one person.
+
+
+4. SCENES AND PROMPTS
+---------------------
+
+==== SCENE 1 - HERO: all prompts are in HERO_SCENE.txt ==================================
+
+==== SCENE 2 - ABOUT: "The Astronomer" ====================
+Story: the same scholar at night, touching a celestial globe whose stars are data points.
+
+L0 background plate  (16:9)
+  An empty 17th-century Dutch study at dusk, nobody in it. Window on the left showing a deep
+  blue evening sky, a dark wooden cabinet, a framed painting on the back wall, warm candle
+  light from the lower right mixing with cool window light.  [STYLE BLOCK, but light: cool from
+  the left window, warm candle from the lower right]
+
+L1 figure  (4:5, transparent)
+  The same young scholar (dark wavy hair, ultramarine robe), seated, leaning toward the left,
+  his right hand reaching out to touch something at shoulder height (not shown), looking at it
+  with concentration. Side view from the right, waist up.  [STYLE BLOCK] [CUT-OUT]
+
+L3 objects  (1:1, transparent)
+  a) A celestial globe on a wooden stand whose constellations are drawn as connected network
+     nodes and lines, a few points glowing softly.  [STYLE BLOCK] [CUT-OUT]
+  b) A small open notebook with handwritten numbers and a bell curve sketched in ink.
+     [STYLE BLOCK] [CUT-OUT]
+
+==== SCENE 3 - NOVAFOCUS: "The Atelier" ===================
+Story: a painter's studio where the canvas on the easel is a product dashboard. Fits
+"Software Engineer at BlockP": building something people see.
+
+L0 background plate  (16:9)
+  An empty 17th-century painter's studio, nobody in it. Large old map of the Low Countries
+  hanging on the back wall, a heavy tapestry curtain drawn back on the left, black-and-white
+  marble floor tiles, a brass chandelier, a window on the left with soft daylight. Empty floor
+  space in the middle.  [STYLE BLOCK]
+
+L1 figure A - the builder  (4:5, transparent)
+  A young man seen from behind, seated on a wooden stool, wearing a black-and-white slashed
+  doublet and a black beret, his right arm raised working on a canvas (canvas not shown).
+  [STYLE BLOCK] [CUT-OUT]
+
+L1 figure B - the model  (4:5, transparent)
+  A young woman standing, wearing a blue silk cloak and a laurel wreath, holding an open
+  silver laptop against her chest like a book instead of a book, looking down modestly.
+  Light from the upper left.  [STYLE BLOCK] [CUT-OUT]
+
+L3 objects  (1:1, transparent)
+  a) The easel with the BlockP dashboard  (4:5, transparent)
+     BEST RESULT: take a screenshot of the BlockP extension's dashboard home screen and attach
+     it as an image reference, then use this prompt. The generator copies a layout far better
+     from a picture than from words.
+
+     A wooden painter's easel, seen from the front, slightly turned, holding a large landscape
+     canvas (about 16:10). On the canvas, painted in oil as if by Vermeer, is the BlockP app
+     dashboard (the attached screenshot), faithfully laid out:
+       - Background of the app: very pale blue-white (#F7FAFF), whole canvas light and airy.
+       - Left: a narrow pale sidebar (#F6FAFF) about one sixth of the width, with the word
+         "BlockP" at the top in bold dark navy (#002954) with the final "P" in bright blue
+         (#0076F4), a thin grey rule under it, then a column of seven small menu rows (a tiny
+         icon and a short grey line each); one row is a rounded pill in bright blue (#0076F4).
+       - Top of the main area: a wide banner with a rounded bottom edge, a smooth blue gradient
+         from light sky blue (#5CA0FF) on the left to deep blue (#0F6FEE) on the right, with a
+         large bold white headline line on its left, and under it a tiny bright green dot
+         (#5CF29B) followed by three small white device icons. On the right of the banner a
+         friendly cartoon dog mascot rises from the bottom edge, cut off by it.
+       - Under the banner, two white cards with rounded corners and soft shadows side by side:
+         the wider left card holds a donut ring chart in shades of blue with a short list of
+         rows beside it, each starting with a small coloured dot; the narrower right card is a
+         list of four rows, each with a small round blue icon on the left and a blue toggle
+         switch turned on at the right.
+       - Below them, one wide white card with a small rounded blue button at its right end.
+     Navy (#002954) for any lines of "text", which are painted as soft grey and navy strokes,
+     not readable letters (except "BlockP"). The canvas catches the soft window light from the
+     upper left; the easel is dark walnut with a small tray holding a palette and brushes.
+     [STYLE BLOCK, but for this layer the accent colour is BlockP blue (#0076F4), not magenta,
+     and the word "BlockP" is allowed] [CUT-OUT]
+
+     If the canvas still does not look like the app: generate the easel with a BLANK primed
+     canvas instead, and the site can lay the real dashboard screenshot onto the canvas in
+     code, with the oil-paint and silver-drawing effects applied on top. That is pixel-exact.
+  b) A heraldic shield badge in hot magenta with a small white padlock symbol, gilded rim,
+     floating.  [STYLE BLOCK] [CUT-OUT]
+  c) A curled paper scroll with a funnel diagram drawn in ink (five bars getting shorter).
+     [STYLE BLOCK] [CUT-OUT]
+  d) A brass oil lamp with a warm flame.  [STYLE BLOCK] [CUT-OUT]
+
+==== SCENE 4 - PROJECTS: "The Workshop of Machines" ======================================
+Story: a craftsman at a lace pillow whose threads become glowing circuits and model graphs.
+
+L0 background plate  (16:9)
+  An empty 17th-century workroom, nobody in it, plain warm grey-green wall, a small wooden
+  shelf with jars and spools of thread, soft window light from the upper left.  [STYLE BLOCK]
+
+L1 figure  (4:5, transparent)
+  The same young scholar (dark wavy hair), wearing a mustard-yellow jacket with a white lace
+  collar, bent forward in deep concentration, both hands working delicate threads at chest
+  height (the work itself not shown). Close three-quarter view from the left.
+  [STYLE BLOCK] [CUT-OUT]
+
+L3 objects  (1:1, transparent)
+  a) A lacemaker's pillow on a small table where the threads turn into thin glowing magenta
+     circuit lines and connected nodes, like a neural network.  [STYLE BLOCK] [CUT-OUT]
+  b) An old smartphone-sized brass-and-glass instrument showing a chat bubble with a warning
+     triangle (for the scam-detection project).  [STYLE BLOCK] [CUT-OUT]
+  c) Three small parchment cards with ink diagrams: a regression line through dots, a k-nearest
+     neighbours circle around a point, a histogram.  [STYLE BLOCK] [CUT-OUT]
+
+==== SCENE 5 - CONTACT: "The Look Back" ==============
+Story: a portrait turning to look at you, an invitation.
+
+L0 background plate  (16:9)
+  A plain, very dark green-black background with soft vignetting, like the background of a
+  Vermeer portrait, subtle canvas texture, nothing else.  [STYLE BLOCK]
+
+L1 figure  (4:5, transparent)
+  Portrait of the same young scholar looking back over his left shoulder directly at the
+  viewer with a slight, friendly smile, wearing a blue and ochre turban-style head wrap and
+  modern over-ear headphones painted in oil around his neck, a single pearl earring catching
+  the light. Head and shoulders, dark background removed.  [STYLE BLOCK] [CUT-OUT]
+
+L3 objects  (1:1, transparent)
+  a) A smartphone in a hot magenta case showing an envelope icon, held at a slight angle.
+     [STYLE BLOCK] [CUT-OUT]
+  b) A wax-sealed letter with a hot magenta wax seal.  [STYLE BLOCK] [CUT-OUT]
+
+
+5. HOW THE LAYERS WILL MOVE (so you know what each one is for)
+--------------------------------------------------------------
+  Mouse:  each layer sits at its own depth (L0 far, L1 middle, L2 near, L3 nearest), so the
+          scene turns in 3D: near layers shift most. Each layer also gets its own depth map
+          (tools/make-depth.mjs) so the figure itself has relief, not just the stack.
+  Scroll (detaching, like the reference):
+          - L3 objects lift off and drift outward and toward the camera, slowly rotating
+            (the laptop tilts open, the mug floats up, charts slide apart);
+          - L1 figure leans or slides slightly toward the centre;
+          - L2 foreground drops away at the bottom;
+          - L0 background zooms in slowly;
+          - then the scene turns into the silver line drawing with glitter and hands over to
+            the next scene, as now.
+
+
+6. FILE CHECKLIST
+-----------------
+Save each scene's layers like this (PNG for cut-outs, JPG for backgrounds):
+
+  public/art/scenes/hero/bg.jpg          L0
+  public/art/scenes/hero/figure.png      L1
+  public/art/scenes/hero/foreground.png  L2
+  public/art/scenes/hero/laptop.png      L3 ...
+  public/art/scenes/hero/chart.png
+  public/art/scenes/hero/mug.png
+  public/art/scenes/hero/dividers.png
+  (same for about/, novafocus/, projects/, contact/)
+
+Quality checks before sending them to me:
+  [ ] Backgrounds: 3840x2160 or larger, nobody in them, nothing cut off where the figure stands.
+  [ ] Cut-outs: real transparency (checkerboard in an image viewer), clean hair edges,
+      no green fringe left over.
+  [ ] Hands: count the fingers; regenerate if wrong.
+  [ ] Same face for "the scholar" across scenes.
+  [ ] Light from the upper left everywhere (except where the prompt says otherwise).
+  [ ] No text, logos or watermarks inside the images.
+  [ ] You have the rights to use them commercially (check your generator's terms).
+
+When the files are in place, I will build a layered version of DepthScene that places each
+layer at its depth and adds the detach-on-scroll motion described above.
+
+
+7. ABOUT - YOU, IN A DIFFERENT STYLE (not the Renaissance scholar)
+-------------------------------------------------------------------
+About is the one chapter that is about you as a person, so it gets its own look: a calm,
+minimal, hand-painted animation-film style. On the site, the hero's silver line drawing will
+hand over into this scene (instead of The Astronomer), which then colours in as "About" rises.
+
+Give the generator 2-3 clear, well-lit photos of your face (front and three-quarter) as a
+character reference, as in section 3. Keep the same reference for every layer below.
+
+ABOUT STYLE BLOCK (paste at the end of every About prompt, instead of the Vermeer one)
+  Style: still frame from a hand-painted 2D animated film; soft gouache and watercolour
+  backgrounds with visible paper texture; the character drawn with clean, thin ink outlines
+  and simple two-tone cel shading; warm late-afternoon light; big soft cumulus clouds; muted,
+  gentle colours (sage green, warm cream, dusty blue, soft terracotta) with one small accent of
+  hot magenta (#FF2E88); calm, quiet, slightly nostalgic mood; minimal detail, lots of sky and
+  breathing room.
+  The young man's face is based on the attached photos: keep his face shape, hair, eyebrows
+  and skin tone recognisable, simplified into the drawing style.
+
+ABOUT NEGATIVE
+  Avoid: photorealism, 3D render, Renaissance or oil-painting look, chibi or big-eyed anime
+  proportions, heavy outlines, harsh shadows, busy background, text, letters, logos,
+  watermark, signature, extra fingers, distorted hands, neon colours.
+
+Scene: "Evening on the terrace". A Bangalore rooftop terrace at golden hour, a young software
+engineer sitting on the low wall with a laptop, a glass of chai beside him, plants in clay pots,
+the city soft and far away under a huge sky. Quiet, focused, at ease.
+
+A1  BACKGROUND (16:9, 3840x2160, no people)
+  A rooftop terrace at golden hour with nobody on it: a low whitewashed parapet wall across the
+  lower third, a few terracotta pots with tulsi and money plants, a string of unlit bulbs,
+  beyond it a soft, distant Bangalore skyline of low buildings and rain trees fading into haze,
+  above it an enormous sky with tall soft cumulus clouds lit warm orange and pink from the
+  left. Leave clear space on the parapet in the centre-right where a person will sit.
+  [ABOUT STYLE BLOCK]
+
+A2  YOU (4:5, 2400x3000, cut-out)
+  The young man from the reference photos sitting sideways on a low wall (wall not shown),
+  one leg bent up, a laptop open on his knee, looking up from it toward the sky on the left
+  with a small, calm smile. He wears a relaxed off-white linen shirt with the sleeves rolled
+  up, dark trousers, simple sneakers. Full body, seen from the front-right, warm light from
+  the left.  [ABOUT STYLE BLOCK] [CUT-OUT]
+
+A3  FOREGROUND (16:9, 3840x1600, cut-out)
+  The near end of the same whitewashed parapet wall, very close to the viewer, with two large
+  terracotta pots of leafy plants spilling over it, slightly out of focus.
+  [ABOUT STYLE BLOCK] [CUT-OUT]
+
+A4  OBJECTS (1:1, 2048x2048 each, cut-out)
+  a) A small glass of milky chai with a thin wisp of steam.  [ABOUT STYLE BLOCK] [CUT-OUT]
+  b) A white paper plane, folded from a page with a tiny hand-drawn bar chart on it, gliding.
+     [ABOUT STYLE BLOCK] [CUT-OUT]
+  c) A small hot magenta (#FF2E88) kite with a short tail, high in the sky.
+     [ABOUT STYLE BLOCK] [CUT-OUT]
+
+A5  PORTRAIT (optional, 4:5, 2000x2500, NOT cut out) - for the About text column
+  Head and shoulders of the same young man in the same off-white shirt, three-quarter view,
+  looking toward the viewer with a friendly, relaxed expression, soft warm sky and clouds
+  behind him.  [ABOUT STYLE BLOCK]
+
+On scroll: the kite and paper plane drift across the sky, the chai's steam rises, the clouds
+slide slowly behind him, and the foreground plants drop away, the same layered depth as the hero.
+
+Save the generated files in  art-source/about/  named with their codes, for example
+"A1 Background.png", "A2 You.png", "A3 Foreground.png", "A4a Chai.png", "A4b Paper plane.png",
+"A4c Kite.png", "A5 Portrait.png", and tell me: I will cut them out, compress them and wire
+them in. The portrait (A5) also appears next to the About text automatically once it is set
+as `about.portrait` in src/content/site.ts.

@@ -1,0 +1,57 @@
+HERO SCENE - 2 THINGS TO MAKE
+=============================
+
+Start from the picture you already made: red velvet curtain at the top, blue sky with clouds
+on the right, monitor with code and the hourglass on the desk at the left, the man from behind
+drawing on his board. Call it the KEYFRAME.
+
+The hero is built from 2 pieces:
+  1. the room (everything except the man and his board), a still image
+  2. the man with his board, a video (his hand draws), on blue
+
+
+1. THE ROOM  (ChatGPT, image edit)
+----------------------------------
+Upload the KEYFRAME and paste:
+
+Edit this painting: remove the man and his drawing board completely. Paint in what was behind
+them: the rest of the dark carved wooden desk, the red velvet curtain and the blue sky with
+white clouds, so it looks like the same room with nobody in it. Keep the monitor, the
+hourglass, the curtain, the sky and the desk exactly as they are: same style, same colours,
+same size, same position. Do not add anything new. Keep the 16:9 size.
+
+Save as: L0 Background Plate.png
+
+
+2. THE MAN, MOVING  (video tool: Kling, Luma or Runway)
+-------------------------------------------------------
+a) First the still, in ChatGPT. Upload the KEYFRAME and paste:
+
+Edit this painting: keep only the man and his drawing board, exactly as they are, same size and
+same position in the frame. Replace everything else (curtain, sky, desk, monitor, hourglass)
+with a flat pure #0000FF blue. No shadow on the blue. His hair edges crisp and sharp against the blue, no blue light on him. Keep the 16:9 size.
+
+Save as: L1 Figure - Builder.png
+
+b) Then the video. In the video tool choose "image to video". Put L1 Figure - Builder.png as
+the START frame and the same picture as the END frame (this makes the loop seamless). Length
+5 to 8 seconds, 1080p. Paste:
+
+Animate this exact painting. It stays an oil painting in every frame: same painted
+brushstrokes, same colours, same painted face, hair and clothes; not realistic, not a photo,
+not a film. Camera completely still. Only his right hand and forearm move, drawing slow small
+pencil strokes on the paper, pausing, then drawing again. His shoulders rise and fall slightly
+with breathing. Nothing else moves; the blue stays flat. Hair edges stay crisp. Seamless loop.
+
+Negative prompt (if there is a field):
+realistic, photorealistic, live action, new person, different face, camera movement, zoom,
+morphing, flicker, extra fingers, background change, text
+
+Export MP4. Save as: L1 Figure - Builder.mp4
+
+
+THEN
+----
+Put L0 Background Plate.png, L1 Figure - Builder.png and L1 Figure - Builder.mp4 in
+C:\ai\portfolio\art-source\hero-v3\ and say so. Claude places them so the man sits exactly
+where he is in the keyframe.

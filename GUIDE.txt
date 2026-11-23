@@ -1,0 +1,127 @@
+PORTFOLIO GUIDE
+===============
+
+RUN IT
+------
+  cd C:\ai\portfolio
+  npm run dev           (development, http://localhost:3000)
+  npm run build         (production build; stop the dev server first)
+
+Deploy: push to GitHub, then import the repo on vercel.com. No settings are needed.
+
+
+WHERE THINGS LIVE
+-----------------
+src/content/site.ts          All text: chapters, NovaFocus work, projects, toolkit, education.
+                             Change words here, not in the components.
+src/app/page.tsx             The order of the chapters on the page.
+src/app/layout.tsx           Fonts (Inter Tight for titles, Instrument Serif for italic lines).
+src/app/globals.css          Colours: paper, ink, night, magenta; the glow and swash styles.
+src/components/
+  SmoothScroll.tsx           Lenis smooth scrolling, driven by GSAP's ticker.
+  ChapterIndex.tsx           The fixed left index. The chapter crossing mid-screen is bold.
+  DepthScene.tsx             three.js: a painting pushed into 3D by its depth map, with a
+                             camera that follows the mouse and a scroll-driven timeline.
+  Hero.tsx                   The opening: The Geographer -> light burst -> silver drawing
+                             with glitter -> The Astronomer -> "About".
+  Chapter.tsx                ChapterOpener (3D painting that draws itself in, giant title),
+                             TornEdge, Reveal (fade-up), Subsection, FeatureList.
+  BurnEdge.tsx               The burnt, torn edge used at every section boundary: a ragged
+                             tear with a charred band and a white-hot fibrous rim that crawls,
+                             deepens and flickers while it is on screen. Props: side
+                             ("top" | "bottom"), color (the section it belongs to), seed
+                             (a different number gives a different tear).
+  LayerScene.tsx             The hero's layered 3D scene: background, figure, foreground and
+                             objects, each at its own depth; objects float off on scroll
+                             (the `detach` path of each layer in Hero.tsx).
+src/lib/depthShader.ts       The GLSL: relief, colour/drawing blend, glitter, light burst.
+src/lib/layerShader.ts       The GLSL for cut-out layers (same looks, plus transparency).
+tools/cutout.mjs             Turns a folder of generated layers into web files: removes fake
+                             (painted checkerboard) backgrounds with BiRefNet, trims, resizes,
+                             compresses to WebP. Usage:
+                               node cutout.mjs ../art-source/<scene> <scene>
+                             Full-size originals live in art-source/ (not published, not in git).
+tools/defringe.mjs           Removes the light halo round a cut-out (edge pixels still holding
+                             the painted checkerboard colour). cutout.mjs runs it on every
+                             cut-out; for older files: node defringe.mjs <file.webp> ...
+tools/make-depth.mjs         Makes the web-size paintings and their depth maps.
+  Visuals.tsx                Scroll-driven visuals: WordCloud, ScoreMeter, CostBars, Funnel,
+                             ScanReveal, GlowCards, Counter.
+public/art/                  Paintings (Vermeer, public domain, from Wikimedia Commons).
+public/Arpit_Ray_Resume.pdf  The "Download résumé" button.
+
+
+HOW THE 3D PAINTINGS WORK (DepthScene.tsx + depthShader.ts)
+------------------------------------------------------------
+The reference site builds every chapter as a real 3D scene (modelled figures, a camera keyed
+to the scroll). Without modelling, the same feel comes from one painting plus its depth map:
+
+1. DEPTH MAP. tools/make-depth.mjs runs an AI depth model (Depth Anything V2) on each
+   painting: white = near (the table, the figure), black = far (the wall, the window).
+2. RELIEF. The painting is drawn on a flat surface split into 280 x 280 small squares. The
+   vertex shader moves every point toward the camera by its depth (uRelief), so the painting
+   really has depth.
+3. MOUSE. A perspective camera orbits a little with the mouse and always looks at the middle
+   of the relief. Near parts shift more than far parts, so the painting moves dimensionally.
+4. SCROLL. Each scene gets a timeline(progress) that returns where things should be:
+     dolly  camera moves in
+     flash  a burst of light at flashAt (the hero uses the tip of the geographer's compass)
+     etch   0 = colour, 1 = silver line drawing (Sobel edges as white lines on a dim ground)
+            with twinkling glitter, densest around the flash
+     mix    0 = this painting, 1 = the next one (depth and colour both blend)
+   Every value eases toward its target each frame, so it moves like a camera rig.
+5. The hero runs the full sequence (see the timeline at the top of Hero.tsx). Each chapter
+   opener arrives as a silver drawing that fills in with colour, then dollies in.
+6. Rendering only runs while a scene is on screen; everything is freed on unmount.
+
+Settings to experiment with:
+  relief (DepthScene prop, 0.32)        how deep the 3D is
+  mouse.x * 0.22 / mouse.y * 0.14       how far the camera turns with the mouse
+  heroTimeline numbers (Hero.tsx)       when each effect starts and ends during the scroll
+  smoothstep(0.09, 0.34, edge)          how many lines the silver drawing has
+  stars(... 260.0, 0.02 + cloud*0.22)   glitter size and density
+  h-[400vh] (Hero.tsx)                  how long the hero scroll lasts
+
+
+ADDING A CHAPTER OR A STORY BEAT
+--------------------------------
+- New subsection under NovaFocus: add an entry to novafocus.subsections in site.ts with a
+  visual key, then map that key to a component in visualFor in page.tsx.
+- New chapter: add it to `chapters` in site.ts (it appears in the left index) and add a
+  <section id="..."> in page.tsx with a ChapterOpener and content.
+
+
+IMAGES
+------
+Use only art you are allowed to use:
+  - Public domain (CC0): Rijksmuseum, The Met Open Access, Wikimedia Commons
+    ("Public domain" licence). Credit them in the footer anyway.
+  - Your own photos or renders.
+  - Do NOT copy Shopify's artwork: it is commissioned and copyrighted.
+
+Modern objects on top of a painting (a laptop, a phone, a shield badge): use transparent
+PNGs, place them as absolutely positioned <img> layers inside ChapterOpener, and give each
+its own GSAP y/scale tween with a different speed, which creates the depth effect.
+
+Adding a painting:
+  1. Put the .jpg in public/art (full size is fine).
+  2. cd tools  then  node make-depth.mjs
+     This writes public/art/web/<name>.jpg (2048px, about 0.6 MB) and <name>-depth.png.
+  3. Register it in the `art` list at the top of src/content/site.ts.
+Only public/art/web is used by the site. The originals in public/art can be removed before
+deploying, so they don't add 15+ MB to the site.
+
+The Lacemaker (planned for Projects) could not be downloaded: Wikimedia was rate-limiting
+at the time. Download it later from
+  https://commons.wikimedia.org/wiki/File:Johannes_Vermeer_-_The_lacemaker_(c.1669-1671).jpg
+then follow the steps above and set projects.art to it in site.ts.
+
+
+NEXT STEPS
+----------
+1. Your regression / KNN project: add it to projects.featured with its own visual (a
+   regression line drawing itself through scatter points).
+2. Keep the starfield running behind the About chapter (fix the canvas and fade it there).
+3. A transparent "modern object" layer in each opener (laptop, shield, chart).
+4. Mobile pass: check every chapter at 390px wide.
+5. Deploy on Vercel and add the link to your résumé.

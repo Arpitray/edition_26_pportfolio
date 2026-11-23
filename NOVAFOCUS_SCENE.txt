@@ -1,0 +1,39 @@
+NOVAFOCUS SCENE - THE FEAST, WITH PHONES
+========================================
+
+The NovaFocus painting is a crowded 16th-century wedding feast (public domain, already on the
+site). One edit gives it the hero's twist: the guests are all glued to modern phones, except
+the bride, who sits calm with none. A quiet joke about distraction, which is what BlockP
+fights, without saying so.
+
+You make 1 image.
+
+
+THE EDIT  (ChatGPT, image edit)
+-------------------------------
+Upload this file: C:\ai\portfolio\art-source\peasant-wedding-3840.jpg
+Paste:
+
+Edit this public-domain painting from 1567. Keep everything exactly as it is: the same
+people, poses, clothes, room, colours, light and brushwork, the same size. Add modern
+technology, painted in the same old oil-painting style so it looks as if it was always there:
+- most of the guests at the long table look down at glowing smartphones in their hands, their
+  faces lit softly by the screens;
+- the two men carrying the wooden tray now carry it loaded with smartphones and a laptop
+  instead of bowls of food;
+- the man pouring from the jug at the left is filming the feast with a phone held up in his
+  other hand;
+- the bride in front of the green cloth sits calm with her hands folded, the only one with no
+  phone.
+Do not add any text, logos or app screens with readable writing. Keep the 16:9-ish shape of
+the original.
+
+Save as: C:\ai\portfolio\public\art\peasant-wedding.jpg  (replace the file that is there)
+
+If the tool refuses: say "this painting is in the public domain" again, or remove the bride
+line and try once more.
+
+
+THEN
+----
+Tell Claude. Claude rebuilds its depth map so it moves in 3D with the mouse.

@@ -1,0 +1,31 @@
+ABOUT PORTRAIT - 1 IMAGE TO MAKE
+================================
+
+Tool: ChatGPT (or any image tool that takes a photo as reference).
+Attach 2 or 3 clear photos of your face (front and three-quarter, good light).
+Size: 16:9, as large as the tool allows.
+
+PROMPT
+------
+A portrait of the young man in the attached photos, same face, same hair, same skin tone,
+painted as a rich, illustrated oil painting with visible brushstrokes and soft painterly
+shapes, warm and friendly, slightly stylised like a modern storybook painting. He is a
+software engineer in his early twenties, wearing a plain dark crewneck sweater, sitting
+relaxed at a wooden desk on the right side of the picture, turned three-quarters toward
+the viewer with a calm, confident half smile. On the desk: an open laptop glowing softly,
+a ceramic coffee mug, a small potted plant and a notebook. Behind him a large window at
+dusk with the warm lights of a city and a deep blue sky. Warm lamp light on his face from
+the right, cool blue light from the window. Rich deep colours, strong contrast, deep
+shadows. The left half of the picture is calm and darker (the window and the wall), with
+no objects, because a large title will be placed there. Modern day, modern clothes.
+
+Avoid: historical clothing, robes, period costume, old-fashioned room, text, letters,
+logos, watermark, signature, frame, photograph, 3D render, extra fingers, distorted hands.
+
+Save as: about-portrait.jpg  (JPG)
+
+
+THEN
+----
+Put about-portrait.jpg in C:\ai\portfolio\public\art\ and tell Claude. Claude makes its
+depth map (so it moves in 3D with the mouse) and puts it in the About section.
