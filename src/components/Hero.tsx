@@ -51,6 +51,9 @@ const HERO_LAYERS: Layer[] = [
 // Where the light bursts: the tip of his pencil on the drafting board (a point on the video
 // frame), so it lands on the drawing on every screen.
 const PENCIL_FLASH = { layer: 0, ...PENCIL };
+// On a portrait screen: smaller, centred between his head and his pencil, standing on the
+// bottom edge.
+const HERO_PORTRAIT = { x: 0.24, y: -0.5, scale: 0.55 };
 
 export default function Hero() {
   const section = useRef<HTMLElement>(null);
@@ -69,11 +72,11 @@ export default function Hero() {
 
   return (
     <section id="top" ref={section} className="relative h-[200vh] bg-night">
-      <div className="sticky top-0 h-screen overflow-hidden">
+      <div className="sticky top-0 h-svh overflow-hidden">
         <LayerScene background={`${SCENE}/bg.webp`} layers={HERO_LAYERS}
-          trigger={section} timeline={heroTimeline} flashAt={PENCIL_FLASH} />
+          trigger={section} timeline={heroTimeline} flashAt={PENCIL_FLASH} portrait={HERO_PORTRAIT} />
 
-        <div ref={card} className="absolute left-1/2 top-1/2 w-[min(78vw,360px)] -translate-x-1/2 -translate-y-1/2 border border-white/70 bg-black/35 px-8 py-10 text-white backdrop-blur-[3px] md:left-[24%] md:top-[27%]">
+        <div ref={card} className="absolute left-1/2 top-[27%] w-[min(84vw,360px)] -translate-x-1/2 -translate-y-1/2 border border-white/70 bg-black/35 px-8 py-10 text-white backdrop-blur-[3px] md:left-[24%] md:top-[27%]">
           <p className="font-display text-[28px] font-semibold leading-[1.05]">{person.name}</p>
           <p className="font-display text-[28px] leading-[1.05] opacity-80">{person.role}</p>
           <p className="mt-6 font-serif text-[19px] italic leading-snug">{person.pitch}</p>

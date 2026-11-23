@@ -26,8 +26,23 @@ export default function ChapterIndex() {
     return () => observer.disconnect();
   }, []);
 
+  const current = chapters.find((c) => c.id === active);
   return (
-    <aside className="pointer-events-none fixed inset-y-0 left-0 z-40 hidden w-44 flex-col justify-between p-5 mix-blend-difference text-white md:flex">
+    <>
+    {/* Phones and tablets: name on the left, the chapter you are in on the right. */}
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-40 flex items-start justify-between px-5 pt-4 text-white mix-blend-difference lg:hidden">
+      <a href="#top" className="pointer-events-auto font-display text-[14px] font-semibold leading-[1.05]">
+        {person.name}
+        <br />
+        <span className="font-normal opacity-70">{person.edition}</span>
+      </a>
+      {current && (
+        <span className="font-display text-[12px] uppercase tracking-[0.16em] opacity-80">
+          {current.numeral} · {current.label}
+        </span>
+      )}
+    </header>
+    <aside className="pointer-events-none fixed inset-y-0 left-0 z-40 hidden w-44 flex-col justify-between p-5 mix-blend-difference text-white lg:flex">
       <a href="#top" className="pointer-events-auto font-display text-[15px] font-semibold leading-[1.05]">
         {person.name}
         <br />
@@ -52,5 +67,6 @@ export default function ChapterIndex() {
         </ul>
       </nav>
     </aside>
+    </>
   );
 }

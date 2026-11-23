@@ -46,12 +46,21 @@ export type Layer = {
 };
 
 /** A scene made of layers: a background that covers the screen, and cut-out layers on it. */
+/**
+ * How a layered scene re-frames on a portrait screen (taller than wide), where the whole
+ * arrangement cannot fit across: every layer is scaled by `scale` about the point (x, y), in
+ * the layers' own units, and that point moves to the middle of the screen horizontally. Pick
+ * the point between the things that must stay in view.
+ */
+export type Portrait = { x: number; y: number; scale: number };
+
 export type LayeredScene = {
   /** The background image; with `backgroundVideo`, its still (reduced motion, or if the video fails). */
   background: string;
   /** Optional looping video (MP4) that fills the background, drawn like a video layer. */
   backgroundVideo?: string;
   layers: Layer[];
+  portrait?: Portrait;
 };
 
 /**
@@ -74,9 +83,11 @@ const ease = (t: number) => t * t * (3 - 2 * t);
  * painting with a depth map, or another layered scene whose pieces move with `nextDetach`.
  */
 export default function LayerScene({
-  background, backgroundVideo, layers, next, trigger, timeline, flashAt, nextTrigger,
+  background, backgroundVideo, layers, next, trigger, timeline, flashAt, nextTrigger, portrait,
 }: {
   background: string; backgroundVideo?: string; layers: Layer[];
+  /** How the scene re-frames on portrait screens (see Portrait). */
+  portrait?: Portrait;
   /** Optional: the scene this one turns into at the end (see the timeline's etch and mix). */
   next?: Art | LayeredScene;
   trigger: React.RefObject<HTMLElement | null>; timeline: LayerTimeline;
@@ -270,6 +281,10 @@ export default function LayerScene({
 
     /** Position and size every layer for the current screen and detach amounts. */
     const arrange = (aspect: number, detachOf: [number, number]) => {
+      // On a portrait screen, scale the arrangement about its focus point (see Portrait).
+      const P = portrait && aspect < 0.9 ? portrait : null;
+      const s = P ? P.scale : 1;
+      const fx = P ? P.x : 0, fy = P ? P.y : 0;
       for (const p of placed) {
         const detach = detachOf[p.group];
         if (!p.layer) {
@@ -284,11 +299,11 @@ export default function LayerScene({
         const t = d ? ease(clamp01((detach - (d.at ?? 0)) / (1 - (d.at ?? 0)))) : 0;
         const z = L.z + (d ? d.z * t : 0);
         const vh = visibleHeight(L.z);
-        const height = L.h * vh;
+        const height = L.h * s * vh;
         p.mesh.scale.set(height * p.aspect, height, 1);
         p.mesh.position.set(
-          (L.x + (d ? d.x * t : 0)) * vh,
-          (L.y + (d ? d.y * t : 0)) * vh,
+          ((L.x - fx) * s + (d ? d.x * t * s : 0)) * vh,
+          (fy + (L.y - fy) * s + (d ? d.y * t * s : 0)) * vh,
           z,
         );
         p.mesh.rotation.z = (L.r ?? 0) + (d ? d.rot * t : 0);
@@ -475,7 +490,7 @@ export default function LayerScene({
       });
       renderer.dispose();
     };
-  }, [background, backgroundVideo, layers, next, trigger, timeline, flashAt, nextTrigger]);
+  }, [background, backgroundVideo, layers, next, trigger, timeline, flashAt, nextTrigger, portrait]);
 
   return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden />;
 }

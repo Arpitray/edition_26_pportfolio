@@ -83,11 +83,11 @@ export function ChapterOpener({ title, tagline, art, scene, blurNote, from = "va
   return (
     <div className="relative z-10" style={torn ? { marginTop: "calc(-1 * var(--tear-h))" } : undefined}>
     <div ref={wrap} className="relative h-[200vh]" style={torn ? tearMask(seed) : undefined}>
-      <div className="sticky top-0 h-screen overflow-hidden bg-night">
+      <div className="sticky top-0 h-svh overflow-hidden bg-night">
         <div ref={painting} className="absolute inset-0">
           {scene ? (
             <LayerScene background={scene.background} backgroundVideo={scene.backgroundVideo} layers={scene.layers} trigger={wrap}
-              timeline={layeredTimeline} flashAt={NO_FLASH} />
+              timeline={layeredTimeline} flashAt={NO_FLASH} portrait={scene.portrait} />
           ) : art && (
             <>
               <DepthScene art={art} trigger={wrap} timeline={drawn ? openerTimeline : plainTimeline} />
@@ -101,7 +101,7 @@ export function ChapterOpener({ title, tagline, art, scene, blurNote, from = "va
             {blurNote}
           </p>
         )}
-        <div ref={heading} className="absolute inset-x-6 bottom-[12vh] md:left-[16rem] md:right-12">
+        <div ref={heading} className="absolute inset-x-6 bottom-[12vh] lg:left-[16rem] md:right-12">
           <h2 className="font-display text-[clamp(64px,13vw,210px)] font-bold leading-[0.85] tracking-[-0.04em] text-white">{title}</h2>
           <p className="mt-6 max-w-3xl text-[clamp(22px,2.6vw,40px)] leading-[1.1] text-white">
             <Tagline text={tagline} />

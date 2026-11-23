@@ -32,7 +32,7 @@ export default function Home() {
       {/* I · About: its painting tears in under the hero, then the page. */}
       <section id="about">
         <ChapterOpener title="About" tagline={about.intro} scene={aboutScene} from="image" seed={29} />
-        <div className="bg-paper px-6 py-[14vh] md:pl-[16rem] md:pr-12">
+        <div className="bg-paper px-6 py-[14vh] lg:pl-[16rem] md:pr-12">
           <div className="grid gap-12 md:grid-cols-12">
             <Reveal className="md:col-span-7">
               <h3 className="text-[clamp(34px,4vw,60px)] leading-[1.02] text-ink"><Tagline text={about.heading} /></h3>
@@ -64,7 +64,7 @@ export default function Home() {
       {/* II · NovaFocus */}
       <section id="novafocus">
         <ChapterOpener title={novafocus.title} tagline={novafocus.tagline} art={novafocus.art} drawn={false} blurNote={novafocus.blurNote} seed={13} />
-        <div className="bg-paper px-6 md:pl-[16rem] md:pr-12">
+        <div className="bg-paper px-6 lg:pl-[16rem] md:pr-12">
           {novafocus.subsections.map((s) => (
             <Subsection key={s.tagline} {...s} visual={visualFor[s.visual]} />
           ))}
@@ -75,7 +75,7 @@ export default function Home() {
       {/* III · Projects */}
       <section id="projects">
         <ChapterOpener title={projects.title} tagline={projects.tagline} art={projects.art} seed={41} />
-        <div className="bg-paper px-6 md:pl-[16rem] md:pr-12">
+        <div className="bg-paper px-6 lg:pl-[16rem] md:pr-12">
           {projects.featured.map((p) => (
             <Subsection key={p.label} {...p} />
           ))}
@@ -84,13 +84,13 @@ export default function Home() {
       </section>
 
       {/* IV · Toolkit */}
-      <section id="toolkit" className="bg-paper px-6 py-[12vh] md:pl-[16rem] md:pr-12">
+      <section id="toolkit" className="bg-paper px-6 py-[12vh] lg:pl-[16rem] md:pr-12">
         <h2 className="font-display text-[clamp(56px,10vw,160px)] font-bold leading-[0.85] tracking-[-0.04em] text-ink">Toolkit</h2>
         <WordCloud words={toolkit} tall />
       </section>
 
       {/* V · Education */}
-      <section id="education" className="bg-paper px-6 pb-[14vh] md:pl-[16rem] md:pr-12">
+      <section id="education" className="bg-paper px-6 pb-[14vh] lg:pl-[16rem] md:pr-12">
         <Reveal className="border-t border-ink/15 pt-16">
           <h3 className="text-[clamp(34px,4vw,60px)] leading-none text-ink"><Tagline text="Education" /></h3>
           <p className="mt-8 font-display text-[14px] font-semibold text-ink">{education.school} · {education.degree} · {education.years}</p>
@@ -101,7 +101,7 @@ export default function Home() {
       {/* VI · Contact */}
       <section id="contact">
         <ChapterOpener title="Contact" tagline="Let’s build something worth measuring." art={art.pearlEarring} seed={67} />
-        <div className="bg-paper px-6 py-[12vh] md:pl-[16rem] md:pr-12">
+        <div className="bg-paper px-6 py-[12vh] lg:pl-[16rem] md:pr-12">
           <a href={`mailto:${person.email}`} className="font-display text-[clamp(28px,4vw,64px)] font-bold tracking-[-0.03em] text-ink underline decoration-magenta decoration-4 underline-offset-8">
             {person.email}
           </a>

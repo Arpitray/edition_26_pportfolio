@@ -35,4 +35,5 @@ const layers: Layer[] = [
     detach: { x: -0.12, y: 0.66, z: 0.4, rot: 0.45, at: 0.12 } },
 ];
 
-export const aboutScene: LayeredScene = { background: `${ABOUT}/bg.webp`, layers };
+// On a portrait screen: smaller, centred between the globe and his face.
+export const aboutScene: LayeredScene = { background: `${ABOUT}/bg.webp`, layers, portrait: { x: 0.1, y: 0, scale: 0.5 } };
