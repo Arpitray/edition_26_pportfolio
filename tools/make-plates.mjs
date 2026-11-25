@@ -1,8 +1,8 @@
 // The star-atlas plates that illustrate the write-ups, each with its main figure cut out so
 // the page can show the plate faded and bring colour into that figure alone:
 //   - Projects: plates made new in the style of Johannes Hevelius' Firmamentum Sobiescianum;
-//   - NovaFocus: real hand-coloured plates from that atlas (1690, public domain; raremaps
-//     scans, which have a thin dark line round their edge that is trimmed off).
+//   - NovaFocus: hand-coloured plates from that atlas (1690, public domain), redrawn so each
+//     main figure shows the work.
 //
 //   node make-plates.mjs [name ...]      (no names: all)
 //
@@ -31,17 +31,20 @@ const PLATES = [
   { name: "noctua", boxes: [[312, 96, 1064, 960], [360, 600, 1070, 965], [600, 560, 1090, 975]] },
   // The two doves passing the sealed, padlocked letter.
   { name: "columbae", boxes: [[150, 96, 832, 704], [624, 336, 1392, 960], [490, 560, 650, 830]] },
-  // NovaFocus, Hevelius 1690. Pegasus: wings and head, then body and legs (Andromeda kept out).
-  { name: "pegasus", file: "hevelius-pegasus.jpg", scan: true, boxes: [[60, 240, 1210, 1150]],
-    poly: [[70, 282], [375, 312], [750, 284], [1032, 298], [1192, 610], [1092, 662], [905, 688], [808, 830], [958, 948], [1012, 1030], [996, 1086], [890, 1078], [856, 960], [705, 912], [750, 1136], [650, 1142], [614, 958], [368, 912], [312, 878], [372, 798], [418, 728], [380, 612], [318, 487], [192, 372]] },
-  { name: "canismajor", file: "hevelius-canismajor.jpg", scan: true, boxes: [[763, 286, 1180, 988]] },
-  { name: "draco", file: "hevelius-draco.jpg", scan: true, boxes: [[562, 293, 1338, 1240]] },
-  { name: "libra", file: "hevelius-libra.jpg", scan: true, boxes: [[537, 211, 1039, 656]] },
-  { name: "perseus", file: "hevelius-perseus.jpg", scan: true, boxes: [[300, 120, 990, 1150]],
-    poly: [[425, 198], [472, 188], [572, 218], [648, 220], [770, 255], [796, 330], [806, 398], [846, 466], [896, 514], [972, 552], [978, 706], [906, 748], [814, 768], [768, 804], [798, 1052], [774, 1082], [696, 1068], [664, 952], [640, 900], [592, 956], [496, 938], [424, 886], [392, 782], [388, 700], [394, 556], [434, 400], [414, 300]] },
-  // The sextant only: the sea-serpent Hydra coils through it, so an outline keeps it out.
-  { name: "sextans", file: "hevelius-sextans.jpg", scan: true, boxes: [[400, 220, 1060, 830]],
-    poly: [[438, 293], [600, 280], [918, 260], [922, 228], [1012, 228], [1022, 262], [1032, 380], [1030, 468], [1044, 505], [1028, 522], [1000, 600], [950, 680], [880, 752], [800, 790], [760, 802], [738, 792], [726, 762]] },
+  // NovaFocus: the Hevelius plates (1690) redrawn so each main figure shows the work (made
+  // with an image editor from the scans, in the plates' own style; "edit" files). Boxes and
+  // outlines in units of a 640 x 520 view of the image (`units`), at the image's own size.
+  { name: "pegasus", file: "hevelius-pegasus-edit.png", native: true, units: [640, 520], boxes: [[100, 122, 500, 421]] },
+  { name: "canismajor", file: "hevelius-canismajor-edit.png", native: true, units: [640, 520], boxes: [[330, 45, 532, 402], [199, 222, 364, 402]],
+    add: [[[306, 226], [330, 224], [358, 230], [364, 268], [352, 300], [334, 282], [308, 262]]] },
+  // The ribbon's placeholder text was painted out ("-clean").
+  { name: "draco", file: "hevelius-draco-edit-clean.png", native: true, units: [640, 520], boxes: [[135, 90, 515, 340]],
+    poly: [[135, 90], [515, 90], [515, 262], [135, 262]] },
+  { name: "libra", file: "hevelius-libra-edit.png", native: true, units: [640, 520], boxes: [[170, 112, 495, 348]] },
+  { name: "perseus", file: "hevelius-perseus-edit.png", native: true, units: [640, 520], boxes: [[150, 82, 472, 432]] },
+  // The funnel and the A/B cards; an outline keeps the sea serpent Hydra out.
+  { name: "sextans", file: "hevelius-sextans-edit.png", native: true, units: [640, 520], boxes: [[172, 95, 468, 262], [232, 260, 392, 340]],
+    poly: [[172, 95], [468, 95], [468, 178], [392, 240], [392, 340], [232, 340], [232, 262], [292, 262], [172, 178]] },
 ];
 const only = process.argv.slice(2);
 
@@ -51,17 +54,22 @@ for (const p of PLATES) {
   if (only.length && !only.includes(p.name)) continue;
   const file = join(SRC, p.file ?? `plate-${p.name}.png`);
   // Scans: scale so that cutting 12 px off every side leaves SCAN_WIDTH; boxes follow.
-  const srcW = (await sharp(file).metadata()).width;
-  const full = p.scan ? SCAN_WIDTH + 24 : WIDTH, cut = p.scan ? 12 : 0, k = full / srcW;
+  const { width: srcW, height: srcH } = await sharp(file).metadata();
+  // native: keep the image's own size (no enlarging); units: boxes given in a scaled view.
+  const full = p.native ? srcW : p.scan ? SCAN_WIDTH + 24 : WIDTH, cut = p.scan ? 12 : 0, k = full / srcW;
+  const [ux, uy] = p.units ? [srcW / p.units[0], srcH / p.units[1]] : [1, 1];
+  const unit = ([x, y]) => [x * ux, y * uy];
   const big = await sharp(file).resize({ width: full }).removeAlpha().png().toBuffer({ resolveWithObject: true });
   const plate = sharp(big.data).extract({ left: cut, top: cut, width: full - 2 * cut, height: big.info.height - 2 * cut });
-  const boxes = p.boxes.map((b) => b.map((v) => Math.max(0, Math.round(v * k) - cut)));
+  const boxes = p.boxes.map(([a, b, c, d]) => [...unit([a, b]), ...unit([c, d])].map((v) => Math.max(0, Math.round(v * k) - cut)));
   // Optional outline (source pixels): only what lies inside it is kept.
-  const poly = p.poly?.map(([x, y]) => [x * k - cut, y * k - cut]);
-  const inPoly = (x, y) => {
+  const poly = p.poly?.map((pt) => unit(pt)).map(([x, y]) => [x * k - cut, y * k - cut]);
+  // Optional `add` outlines: always kept, for a part the model leaves faint.
+  const adds = (p.add ?? []).map((pts) => pts.map((pt) => unit(pt)).map(([x, y]) => [x * k - cut, y * k - cut]));
+  const inPoly = (x, y, pts = poly) => {
     let hit = false;
-    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-      const [xi, yi] = poly[i], [xj, yj] = poly[j];
+    for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+      const [xi, yi] = pts[i], [xj, yj] = pts[j];
       if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) hit = !hit;
     }
     return hit;
@@ -79,7 +87,9 @@ for (const p of PLATES) {
     const [mask] = await remover(await RawImage.fromBlob(new Blob([crop])));
     for (let y = 0; y < bh; y++) for (let x = 0; x < bw; x++) {
       const s = ((y0 + y) * W + (x0 + x)) * 3, d = ((y0 + y) * W + (x0 + x)) * 4;
-      const a = poly && !inPoly(x0 + x + 0.5, y0 + y + 0.5) ? 0 : mask.data[(y * bw + x) * 4 + 3];
+      const px = x0 + x + 0.5, py = y0 + y + 0.5;
+      const a = adds.some((pts) => inPoly(px, py, pts)) ? 255
+        : poly && !inPoly(px, py) ? 0 : mask.data[(y * bw + x) * 4 + 3];
       if (a <= fig[d + 3]) continue;
       fig[d] = img[s]; fig[d + 1] = img[s + 1]; fig[d + 2] = img[s + 2]; fig[d + 3] = a;
     }

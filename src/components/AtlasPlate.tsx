@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "@/lib/scroll";
+import VeilCanvas from "@/components/VeilCanvas";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,18 +21,21 @@ export type Sky =
   | "pegasus" | "canismajor" | "draco" | "libra" | "perseus" | "sextans";
 export type SkyProject = { tagline: string; label: string; body: string; link?: string; sky: Sky };
 
-// width / height of each plate image; `hevelius`: a real plate from the 1690 atlas.
-const PLATES: Record<Sky, { name: string; fig: string; alt: string; aspect: number; hevelius?: boolean }> = {
+// width / height of each plate image. All are new or redrawn plates in the style of Hevelius'
+// atlas (1690). `veil`: in the middle of the screen a scan sweeps the card and veils it in
+// mist (VeilCanvas), the way BlockP blurs an image on the device (the NudeNet write-up).
+const PLATES: Record<Sky, { name: string; fig: string; alt: string; aspect: number; veil?: string }> = {
   scutum: { name: "Scutum", fig: "A", aspect: 1.5, alt: "Scutum: a gilded shield that has caught a fishing hook baited with a sealed letter and coins" },
   gemma: { name: "Gemma", fig: "B", aspect: 1.5, alt: "Gemma: a diamond ring on a velvet cushion, a prism splitting the light that falls on it" },
   noctua: { name: "Noctua", fig: "C", aspect: 1.5, alt: "Noctua: an owl in spectacles writing with a quill on a stack of books, a magnifying glass beside it" },
   columbae: { name: "Columbae", fig: "D", aspect: 1.5, alt: "Columbae: two doves passing a sealed, padlocked letter between them" },
-  pegasus: { name: "Pegasus", fig: "T", aspect: 1400 / 1140, hevelius: true, alt: "Pegasus, the winged horse, from Hevelius' star atlas" },
-  canismajor: { name: "Canis Major", fig: "DD", aspect: 1400 / 1143, hevelius: true, alt: "Canis Major, the great dog, from Hevelius' star atlas" },
-  draco: { name: "Draco", fig: "B", aspect: 1400 / 1140, hevelius: true, alt: "Draco, the dragon, coiled round the pole, from Hevelius' star atlas" },
-  libra: { name: "Libra", fig: "HH", aspect: 1400 / 1148, hevelius: true, alt: "Libra, the scales, from Hevelius' star atlas" },
-  perseus: { name: "Perseus", fig: "W", aspect: 1400 / 1157, hevelius: true, alt: "Perseus with Medusa's head, from Hevelius' star atlas" },
-  sextans: { name: "Sextans", fig: "VV", aspect: 1400 / 1149, hevelius: true, alt: "Sextans, Hevelius' own sextant, from his star atlas" },
+  pegasus: { name: "Pagina", fig: "T", aspect: 1388 / 1133, alt: "Pagina: the BlockP website drawn as an engraved browser window, the corgi mascot peeking up, on a ribbon reading 70,000 a day" },
+  canismajor: { name: "Custos", fig: "DD", aspect: 1385 / 1136, alt: "Custos: the BlockP extension's panel with its blockers, timed unlock and partners, guarded by the corgi mascot, on a ribbon reading 20,000+ users" },
+  draco: { name: "Claves", fig: "B", aspect: 1387 / 1134, alt: "Claves: a cloud linked to a code lock, an email approval with a wax seal, and a key with a padlock" },
+  libra: { name: "Categoriae", fig: "H", aspect: 1383 / 1137, alt: "Categoriae: website cards filed into a cabinet of labelled drawers, a balance scale beside them" },
+  perseus: { name: "Velum", fig: "W", aspect: 1377 / 1142, veil: "Scanned and veiled as it scrolls into view, the way BlockP blurs an image on the user's own device.",
+    alt: "Velum: a laptop showing a gallery in which one picture is veiled by mist, a shield with a tick, the corgi peeking over it" },
+  sextans: { name: "Mensura", fig: "VV", aspect: 1382 / 1138, alt: "Mensura: a funnel narrowing in coloured bands, its stream splitting into two cards, A and B" },
 };
 export const plateAspect = (sky: Sky) => PLATES[sky].aspect;
 
@@ -111,13 +115,16 @@ export default function AtlasPlate({ sky }: { sky: Sky }) {
               alt={plate.alt}
               className="absolute inset-0 h-full w-full select-none opacity-0 [filter:drop-shadow(0_6px_8px_rgba(40,25,10,0.28))]" />
           </div>
+          {/* The NudeNet plate: scanned and veiled in mist as it reaches the middle of the screen. */}
+          {plate.veil && <VeilCanvas src={`/art/plates/${sky}.webp`} trigger={root} card={card} />}
           {/* Lamp light on the paper, following the pointer. */}
           <div ref={glare} className="pointer-events-none absolute inset-0 opacity-0 mix-blend-soft-light [background:radial-gradient(circle_at_var(--gx,50%)_var(--gy,50%),rgba(255,248,230,0.75),rgba(255,248,230,0)_55%)]" />
         </div>
       </div>
       <figcaption className="mt-4 flex flex-wrap items-baseline gap-x-3 font-display text-[11px] text-ink/55">
         <span className="font-semibold uppercase tracking-[0.22em] text-ink/75">Fig. {plate.fig} · {plate.name}</span>
-        <span className="font-serif text-[14px] italic">{plate.hevelius ? "Johannes Hevelius, Firmamentum Sobiescianum, 1690" : "after the star atlas of Johannes Hevelius, 1690"}</span>
+        <span className="font-serif text-[14px] italic">after the star atlas of Johannes Hevelius, 1690</span>
+        {plate.veil && <span className="mt-1 basis-full font-serif text-[14px] italic text-ink/70">{plate.veil}</span>}
       </figcaption>
     </figure>
   );

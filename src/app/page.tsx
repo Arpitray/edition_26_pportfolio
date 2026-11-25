@@ -15,8 +15,8 @@ export default function Home() {
 
       {/* I · About: its painting tears in under the hero, then the page. */}
       <section id="about">
-        {/* Rembrandt, Aristotle with a Bust of Homer (1653): a thinker in golden light. */}
-        <ChapterOpener title="About" tagline={about.intro} art={art.aristotle} from="image" seed={29} />
+        {/* Friedrich, Two Men Contemplating the Moon (c. 1825–30): dusk, a crescent moon. */}
+        <ChapterOpener title="About" tagline={about.intro} art={art.moon} from="image" seed={29} />
         <div className="relative bg-paper px-6 py-[14vh] lg:pl-[16rem] md:pr-12">
           {/* Cellarius, the Copernican system (1660), faded behind the text. */}
           <ChartBackdrop src="/art/backgrounds/cellarius-copernicus.jpg" />
@@ -51,7 +51,7 @@ export default function Home() {
       {/* II · NovaFocus */}
       <section id="novafocus">
         <ChapterOpener title={novafocus.title} tagline={novafocus.tagline} art={novafocus.art} scene={novafocus.scene} blurNote={novafocus.blurNote} seed={13} />
-        {/* Six plates from Hevelius' star atlas, three by two; each travels down to its write-up. */}
+        {/* Six star-atlas plates redrawn from Hevelius (1690), three by two; each travels down to its write-up. */}
         <AtlasIntro tagline="Six things I built at BlockP." plates={novafocus.subsections.map((s) => s.sky)} cols={3}
           backdrop={{ src: "/art/backgrounds/cellarius-boreale.jpg", alt: "" }} />
         <div className="bg-paper px-6 lg:pl-[16rem] md:pr-12">
@@ -97,8 +97,8 @@ export default function Home() {
 
       {/* VI · Contact */}
       <section id="contact">
-        {/* Velázquez, Juan de Pareja (1650): looking straight at you. */}
-        <ChapterOpener title="Contact" tagline="Let’s build something worth measuring." art={art.pareja} seed={67} />
+        {/* Aert van der Neer, Landscape at Sunset (1650s): the day's last light over the river. */}
+        <ChapterOpener title="Contact" tagline="Let’s build something worth measuring." art={art.sunset} seed={67} />
         <div className="relative bg-paper px-6 py-[12vh] lg:pl-[16rem] md:pr-12">
           {/* Cellarius, the southern sky with ships and astronomers (1660), faded behind. */}
           <ChartBackdrop src="/art/backgrounds/cellarius-australe.jpg" />
@@ -112,7 +112,7 @@ export default function Home() {
             ))}
             <a href="/Arpit_Ray_Resume.pdf" className="rounded-full bg-magenta px-4 py-2 text-white">Download résumé</a>
           </div>
-          <p className="mt-24 font-display text-[11px] text-ink/50">Paintings: Rembrandt and Diego Velázquez (The Metropolitan Museum of Art), Pieter Bruegel the Elder and Johannes Vermeer, public domain. Star charts: Andreas Cellarius, Harmonia Macrocosmica (1660), and Johannes Hevelius, Firmamentum Sobiescianum (1690). The four project plates were made for this site in the style of Hevelius.</p>
+          <p className="mt-24 font-display text-[11px] text-ink/50">Paintings: Caspar David Friedrich and Aert van der Neer (The Metropolitan Museum of Art), Pieter Bruegel the Elder and Johannes Vermeer, public domain. Star charts: Andreas Cellarius, Harmonia Macrocosmica (1660). The ten star-atlas plates were made for this site after Johannes Hevelius, Firmamentum Sobiescianum (1690), six of them redrawn from his own plates.</p>
           </div>
         </div>
       </section>

@@ -15,13 +15,13 @@ const painting = (name: string, alt: string, focus?: [number, number]): Art => (
   focus,
 });
 
-// Public domain: Johannes Vermeer (Wikimedia Commons); Rembrandt and Velázquez (The Metropolitan
-// Museum of Art, Open Access).
+// Public domain: Johannes Vermeer (Wikimedia Commons); Caspar David Friedrich and Aert van der
+// Neer (The Metropolitan Museum of Art, Open Access).
 export const art = {
-  // On a wide screen keep his face and his hand on Homer's bust.
-  aristotle: painting("rembrandt-aristotle", "Rembrandt, Aristotle with a Bust of Homer (1653)", [0.45, 0.3]),
-  // On a wide screen keep his face in the upper half, above the chapter title.
-  pareja: painting("velazquez-pareja", "Diego Velázquez, Juan de Pareja (1650)", [0.55, 0.34]),
+  // On a narrow screen keep the two men and the crescent moon (left of centre).
+  moon: painting("friedrich-moon", "Caspar David Friedrich, Two Men Contemplating the Moon (c. 1825–30)", [0.32, 0.5]),
+  // On a narrow screen keep the glowing clouds and the bare tree (right of centre).
+  sunset: painting("neer-sunset", "Aert van der Neer, Landscape at Sunset (1650s)", [0.62, 0.45]),
   geographer: painting("geographer", "Johannes Vermeer, The Geographer (1669)"),
   astronomer: painting("astronomer", "Johannes Vermeer, The Astronomer (1668)"),
   artOfPainting: painting("art-of-painting", "Johannes Vermeer, The Art of Painting (c. 1666–68)"),

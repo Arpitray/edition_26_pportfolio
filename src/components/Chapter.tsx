@@ -66,9 +66,14 @@ export function ChapterOpener({ title, tagline, art, scene, blurNote, from = "va
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // Phones: the opener is a short, unpinned picture, so the title arrives while it comes
+      // into view instead of after it has started to leave.
+      const phone = window.matchMedia("(max-width: 767px)").matches;
       gsap.fromTo(heading.current, { yPercent: 40, opacity: 0 }, {
         yPercent: -10, opacity: 1, ease: "power2.out",
-        scrollTrigger: { trigger: wrap.current, start: blurred ? "10% top" : "top 60%", end: blurred ? "45% top" : "35% top", scrub: true },
+        scrollTrigger: phone
+          ? { trigger: wrap.current, start: "top 85%", end: "top 30%", scrub: true }
+          : { trigger: wrap.current, start: blurred ? "10% top" : "top 60%", end: blurred ? "45% top" : "35% top", scrub: true },
       });
       if (blurred && !prefersReducedMotion()) {
         // Scaled up a touch while blurred, so the soft edges stay off screen.
@@ -82,8 +87,9 @@ export function ChapterOpener({ title, tagline, art, scene, blurNote, from = "va
 
   return (
     <div className="relative z-10" style={torn ? { marginTop: "calc(-1 * var(--tear-h))" } : undefined}>
-    <div ref={wrap} className="relative h-[200vh] simple:h-[140vh]" style={torn ? tearMask(seed) : undefined}>
-      <div className="sticky top-0 h-svh overflow-hidden bg-night">
+    {/* Phones: a picture just over half the screen tall that scrolls by (no pin). */}
+    <div ref={wrap} className="relative h-[200vh] simple:h-[140vh] max-md:h-auto!" style={torn ? tearMask(seed) : undefined}>
+      <div className="sticky top-0 h-svh overflow-hidden bg-night max-md:relative max-md:h-[58svh]">
         <div ref={painting} className="absolute inset-0">
           <div className="absolute inset-0 simple:hidden">
             {scene ? (
@@ -108,7 +114,7 @@ export function ChapterOpener({ title, tagline, art, scene, blurNote, from = "va
             {blurNote}
           </p>
         )}
-        <div ref={heading} className="absolute inset-x-6 bottom-[12vh] lg:left-[16rem] md:right-12">
+        <div ref={heading} className="absolute inset-x-6 bottom-[12vh] lg:left-[16rem] md:right-12 max-md:bottom-[calc(var(--tear-h)*0.6)]">
           <h2 className="font-display text-[clamp(64px,13vw,210px)] font-bold leading-[0.85] tracking-[-0.04em] text-white">{title}</h2>
           <p className="mt-6 max-w-3xl text-[clamp(22px,2.6vw,40px)] leading-[1.1] text-white">
             <Tagline text={tagline} />
@@ -147,7 +153,7 @@ export function Subsection({ tagline, label, body, visual, link, flip = false }:
   flip?: boolean;
 }) {
   return (
-    <article className="grid gap-10 py-[14vh] md:grid-cols-12 md:items-center">
+    <article className="grid gap-6 py-[6vh] md:grid-cols-12 md:items-center md:gap-10 md:py-[14vh]">
       <Reveal className={`md:col-span-5 ${flip ? "md:order-2" : ""}`}>
         <h3 className="text-[clamp(34px,4vw,60px)] leading-[1.02] text-ink"><Tagline text={tagline} /></h3>
         <p className="mt-8 font-display text-[14px] font-semibold text-ink">{label}</p>
