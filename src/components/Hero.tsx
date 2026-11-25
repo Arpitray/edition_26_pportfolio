@@ -71,10 +71,19 @@ export default function Hero() {
   }, []);
 
   return (
-    <section id="top" ref={section} className="relative h-[200vh] bg-night">
+    <section id="top" ref={section} className="relative h-[200vh] bg-night simple:h-svh">
       <div className="sticky top-0 h-svh overflow-hidden">
-        <LayerScene background={`${SCENE}/bg.webp`} layers={HERO_LAYERS}
-          trigger={section} timeline={heroTimeline} flashAt={PENCIL_FLASH} portrait={HERO_PORTRAIT} />
+        <div className="absolute inset-0 simple:hidden">
+          <LayerScene background={`${SCENE}/bg.webp`} layers={HERO_LAYERS}
+            trigger={section} timeline={heroTimeline} flashAt={PENCIL_FLASH} portrait={HERO_PORTRAIT} />
+        </div>
+        {/* Phones and tablets: the same scene as a still (captured from it), tall or wide to
+            match how the screen is held. */}
+        <picture className="absolute inset-0 hidden simple:block">
+          <source media="(orientation: landscape)" srcSet={`${SCENE}/hero-wide.webp`} />
+          <img src={`${SCENE}/hero-tall.webp`} alt="A young engineer at his desk, sketching an app on a drafting board, his code on a monitor beside him"
+            fetchPriority="high" className="h-full w-full object-cover object-bottom" />
+        </picture>
 
         <div ref={card} className="absolute left-1/2 top-[27%] w-[min(84vw,360px)] -translate-x-1/2 -translate-y-1/2 border border-white/70 bg-black/35 px-8 py-10 text-white backdrop-blur-[3px] md:left-[24%] md:top-[27%]">
           <p className="font-display text-[28px] font-semibold leading-[1.05]">{person.name}</p>

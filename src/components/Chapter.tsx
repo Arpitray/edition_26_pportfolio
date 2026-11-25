@@ -82,18 +82,25 @@ export function ChapterOpener({ title, tagline, art, scene, blurNote, from = "va
 
   return (
     <div className="relative z-10" style={torn ? { marginTop: "calc(-1 * var(--tear-h))" } : undefined}>
-    <div ref={wrap} className="relative h-[200vh]" style={torn ? tearMask(seed) : undefined}>
+    <div ref={wrap} className="relative h-[200vh] simple:h-[140vh]" style={torn ? tearMask(seed) : undefined}>
       <div className="sticky top-0 h-svh overflow-hidden bg-night">
         <div ref={painting} className="absolute inset-0">
-          {scene ? (
-            <LayerScene background={scene.background} backgroundVideo={scene.backgroundVideo} layers={scene.layers} trigger={wrap}
-              timeline={layeredTimeline} flashAt={NO_FLASH} portrait={scene.portrait} />
-          ) : art && (
-            <>
+          <div className="absolute inset-0 simple:hidden">
+            {scene ? (
+              <LayerScene background={scene.background} backgroundVideo={scene.backgroundVideo} layers={scene.layers} trigger={wrap}
+                timeline={layeredTimeline} flashAt={NO_FLASH} portrait={scene.portrait} />
+            ) : art && (
               <DepthScene art={art} trigger={wrap} timeline={drawn ? openerTimeline : plainTimeline} />
-              <span className="sr-only">{art.alt}</span>
-            </>
+            )}
+          </div>
+          {/* Phones and tablets: the painting as a plain image, cropped around its focus. */}
+          {art && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={art.color} alt={art.alt} loading="lazy" decoding="async"
+              className="absolute inset-0 hidden h-full w-full object-cover simple:block"
+              style={{ objectPosition: art.focus ? `${art.focus[0] * 100}% ${art.focus[1] * 100}%` : "50% 50%" }} />
           )}
+          {art && <span className="sr-only simple:hidden">{art.alt}</span>}
         </div>
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-black/20" />
         {blurNote && (
@@ -134,12 +141,14 @@ export function Reveal({ children, className = "" }: { children: React.ReactNode
 }
 
 /** One story beat: tagline, label and text on the left, its scroll visual on the right. */
-export function Subsection({ tagline, label, body, visual, link }: {
+export function Subsection({ tagline, label, body, visual, link, flip = false }: {
   tagline: string; label: string; body: string; visual?: React.ReactNode; link?: string;
+  /** Visual on the left and text on the right (on wide screens), for alternating rows. */
+  flip?: boolean;
 }) {
   return (
     <article className="grid gap-10 py-[14vh] md:grid-cols-12 md:items-center">
-      <Reveal className="md:col-span-5">
+      <Reveal className={`md:col-span-5 ${flip ? "md:order-2" : ""}`}>
         <h3 className="text-[clamp(34px,4vw,60px)] leading-[1.02] text-ink"><Tagline text={tagline} /></h3>
         <p className="mt-8 font-display text-[14px] font-semibold text-ink">{label}</p>
         <p className="mt-2 max-w-md font-serif text-[20px] leading-[1.25] text-ink/90">{body}</p>
@@ -149,7 +158,7 @@ export function Subsection({ tagline, label, body, visual, link }: {
           </a>
         )}
       </Reveal>
-      {visual && <div className="md:col-span-7">{visual}</div>}
+      {visual && <div className={`md:col-span-7 ${flip ? "md:order-1" : ""}`}>{visual}</div>}
     </article>
   );
 }

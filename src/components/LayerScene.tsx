@@ -6,7 +6,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { layerVertex, layerFragment, flashFragment } from "@/lib/layerShader";
 import { depthVertex, depthFragment } from "@/lib/depthShader";
-import { prefersReducedMotion } from "@/lib/scroll";
+import { prefersReducedMotion, isSimple } from "@/lib/scroll";
 import type { Art } from "@/content/site";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -24,6 +24,13 @@ export type Layer = {
   key?: "green" | "blue" | "screen";
   /** Colour grade, to match the layer to its scene: 1 = unchanged for each. */
   grade?: { exposure?: number; contrast?: number; saturation?: number };
+  /**
+   * "background": the layer is a piece cut out of the background picture (tools/cut-people.mjs)
+   * and sits exactly over its own spot in it on every screen. Then x and y are the centre of
+   * the piece as fractions of the background picture (0..1 from its top-left), and h is its
+   * height as a fraction of the picture's height. It still moves with its depth and detach.
+   */
+  anchor?: "background";
   /** Distance in front of the background (0 = on it). Nearer layers move more with the mouse. */
   z: number;
   /**
@@ -104,6 +111,8 @@ export default function LayerScene({
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    // Phones and tablets get a still image instead (the canvas is hidden there): no WebGL.
+    if (isSimple()) return;
     const canvas = canvasRef.current!;
     const section = trigger.current!;
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
@@ -285,6 +294,8 @@ export default function LayerScene({
       const P = portrait && aspect < 0.9 ? portrait : null;
       const s = P ? P.scale : 1;
       const fx = P ? P.x : 0, fy = P ? P.y : 0;
+      // Size of each group's background on screen, in screen heights, for anchored layers.
+      const bgOf: { h: number; aspect: number }[] = [];
       for (const p of placed) {
         const detach = detachOf[p.group];
         if (!p.layer) {
@@ -292,6 +303,7 @@ export default function LayerScene({
           // with some overscan so camera moves never show its edge.
           const height = p.aspect > aspect ? 2 : (2 * aspect) / p.aspect;
           p.mesh.scale.set(height * p.aspect * OVERSCAN, height * OVERSCAN, 1);
+          bgOf[p.group] = { h: (height * OVERSCAN) / 2, aspect: p.aspect };
           continue;
         }
         const L = p.layer;
@@ -299,11 +311,17 @@ export default function LayerScene({
         const t = d ? ease(clamp01((detach - (d.at ?? 0)) / (1 - (d.at ?? 0)))) : 0;
         const z = L.z + (d ? d.z * t : 0);
         const vh = visibleHeight(L.z);
-        const height = L.h * s * vh;
+        // A piece of the background: its place in the picture, turned into screen units. It
+        // follows the background, so the portrait re-framing does not apply to it.
+        const bg = L.anchor === "background" ? bgOf[p.group] : undefined;
+        const ls = bg ? 1 : s, lfx = bg ? 0 : fx, lfy = bg ? 0 : fy;
+        const lx = bg ? (L.x - 0.5) * bg.h * bg.aspect : L.x;
+        const ly = bg ? (0.5 - L.y) * bg.h : L.y;
+        const height = (bg ? L.h * bg.h : L.h * ls) * vh;
         p.mesh.scale.set(height * p.aspect, height, 1);
         p.mesh.position.set(
-          ((L.x - fx) * s + (d ? d.x * t * s : 0)) * vh,
-          (fy + (L.y - fy) * s + (d ? d.y * t * s : 0)) * vh,
+          ((lx - lfx) * ls + (d ? d.x * t * ls : 0)) * vh,
+          (lfy + (ly - lfy) * ls + (d ? d.y * t * ls : 0)) * vh,
           z,
         );
         p.mesh.rotation.z = (L.r ?? 0) + (d ? d.rot * t : 0);

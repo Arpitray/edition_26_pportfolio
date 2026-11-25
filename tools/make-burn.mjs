@@ -75,10 +75,15 @@ const TOAST = [176, 128, 72];     // toasted paper
 const EMBER = [255, 112, 36];
 const CORE = [255, 214, 140];
 
-const edge = Buffer.alloc(TILE_W * TILE_H * 4);
-const mask = Buffer.alloc(TILE_W * TILE_H * 4);
 const MID = TILE_H * 0.42;
 
+/**
+ * Paints one side of the tear: side 1 is the sheet below the line, side -1 the sheet above
+ * the SAME line (the other half of a rip), each with its own burn.
+ */
+function paint(side) {
+const edge = Buffer.alloc(TILE_W * TILE_H * 4);
+const mask = Buffer.alloc(TILE_W * TILE_H * 4);
 for (let x = 0; x < TILE_W; x++) {
   const ty = MID + tear(x);
   const r = reach(x, 0) * 0.5 + 0.5;                       // 0..1 along the edge
@@ -92,7 +97,7 @@ for (let x = 0; x < TILE_W; x++) {
     const b = blotch(x, y);
     // Depth into the sheet: the edge itself is ragged at a fine scale, and each band's
     // boundary wanders more the further in it lies (burns bite unevenly).
-    const d = y - ty + rag(x, y) * 3.2 + b * 3;
+    const d = side * (y - ty) + rag(x, y) * 3.2 + b * 3;
     const dOut = d + outer(x, y) * 9;
     const gr = grain(x, y);
     const shape = clamp01(d + 0.5);
@@ -121,6 +126,11 @@ for (let x = 0; x < TILE_W; x++) {
     edge[i + 3] = Math.round(a * shape * 255);
   }
 }
+return { edge, mask };
+}
+const below = paint(1);
+const above = paint(-1);
+const { edge, mask } = below;
 
 const write = async (buf, name, flip) => {
   let img = sharp(buf, { raw: { width: TILE_W, height: TILE_H, channels: 4 } });

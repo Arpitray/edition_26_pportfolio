@@ -5,7 +5,7 @@ import * as THREE from "three";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { gsap } from "gsap";
 import { depthVertex, depthFragment } from "@/lib/depthShader";
-import { prefersReducedMotion } from "@/lib/scroll";
+import { prefersReducedMotion, isSimple } from "@/lib/scroll";
 import type { Art } from "@/content/site";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -21,13 +21,18 @@ export const ramp = (p: number, a: number, b: number) => {
   return t * t * (3 - 2 * t);
 };
 
-/** Crop a texture like CSS object-fit: cover, for a surface of the given aspect ratio. */
-function cover(texture: THREE.Texture, aspect: number) {
+/**
+ * Crop a texture like CSS object-fit: cover, for a surface of the given aspect ratio.
+ * `focus` is like object-position (0..1 from the image's left and top): the part of a tall
+ * painting kept on a wide screen, or of a wide one on a tall screen. Default: the centre.
+ */
+function cover(texture: THREE.Texture, aspect: number, focus: [number, number] = [0.5, 0.5]) {
   const img = texture.image as { width: number; height: number };
   const imageAspect = img.width / img.height;
   const sx = imageAspect > aspect ? aspect / imageAspect : 1;
   const sy = imageAspect > aspect ? 1 : imageAspect / aspect;
-  return new THREE.Vector4(sx, sy, (1 - sx) / 2, (1 - sy) / 2);
+  // Texture v runs from the bottom of the image, so the top-based focus is flipped.
+  return new THREE.Vector4(sx, sy, (1 - sx) * focus[0], (1 - sy) * (1 - focus[1]));
 }
 
 /**
@@ -48,6 +53,8 @@ export default function DepthScene({
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    // Phones and tablets get a still image instead (the canvas is hidden there): no WebGL.
+    if (isSimple()) return;
     const canvas = canvasRef.current!;
     const section = trigger.current!;
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
@@ -101,8 +108,8 @@ export default function DepthScene({
       uniforms.uAspect.value = aspect;
       const [colorA, , colorB] = textures;
       if (colorA) {
-        uniforms.uCoverA.value = cover(colorA, aspect);
-        uniforms.uCoverB.value = cover(colorB ?? colorA, aspect);
+        uniforms.uCoverA.value = cover(colorA, aspect, art.focus);
+        uniforms.uCoverB.value = colorB ? cover(colorB, aspect, next?.focus) : cover(colorA, aspect, art.focus);
         // Edge-detection step: about one and a half screen pixels, in texture space.
         const ca = uniforms.uCoverA.value, cb = uniforms.uCoverB.value;
         uniforms.uTexelA.value.set((1.5 / w) * ca.x, (1.5 / h) * ca.y);

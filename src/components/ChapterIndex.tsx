@@ -30,17 +30,23 @@ export default function ChapterIndex() {
   return (
     <>
     {/* Phones and tablets: name on the left, the chapter you are in on the right. */}
-    <header className="pointer-events-none fixed inset-x-0 top-0 z-40 flex items-start justify-between px-5 pt-4 text-white mix-blend-difference lg:hidden">
-      <a href="#top" className="pointer-events-auto font-display text-[14px] font-semibold leading-[1.05]">
-        {person.name}
-        <br />
-        <span className="font-normal opacity-70">{person.edition}</span>
-      </a>
-      {current && (
-        <span className="font-display text-[12px] uppercase tracking-[0.16em] opacity-80">
-          {current.numeral} · {current.label}
-        </span>
-      )}
+    {/* A soft blurred band behind the bar, fading out downward, so the text scrolling under it
+        never collides with the name. Its own layer: the bar's words must blend with the page
+        itself (mix-blend-difference: dark on paper, light on paintings), not with this band. */}
+    <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-40 h-16 backdrop-blur-md [mask-image:linear-gradient(to_bottom,black_55%,transparent)] lg:hidden" />
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-40 text-white mix-blend-difference lg:hidden">
+      <div className="flex items-start justify-between px-5 pt-4">
+        <a href="#top" className="pointer-events-auto font-display text-[14px] font-semibold leading-[1.05]">
+          {person.name}
+          <br />
+          <span className="font-normal opacity-70">{person.edition}</span>
+        </a>
+        {current && (
+          <span className="font-display text-[12px] uppercase tracking-[0.16em] opacity-80">
+            {current.numeral} · {current.label}
+          </span>
+        )}
+      </div>
     </header>
     <aside className="pointer-events-none fixed inset-y-0 left-0 z-40 hidden w-44 flex-col justify-between p-5 mix-blend-difference text-white lg:flex">
       <a href="#top" className="pointer-events-auto font-display text-[15px] font-semibold leading-[1.05]">

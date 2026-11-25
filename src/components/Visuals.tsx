@@ -37,7 +37,9 @@ export function WordCloud({ words, tall = false }: { words: string[]; tall?: boo
     return () => ctx.revert();
   }, []);
   return (
-    <div ref={ref} className={`relative ${tall ? "h-[90vh]" : "h-[60vh]"}`}>
+    // overflow-x-clip: long words near the right edge must never widen the page sideways
+    // (clip, unlike hidden, makes no scroll box and keeps the vertical drift).
+    <div ref={ref} className={`relative overflow-x-clip ${tall ? "h-[90vh]" : "h-[60vh]"}`}>
       {words.map((word, i) => {
         // One cell per word in a 3-column grid, nudged inside its cell, so words never
         // collide. Deterministic (no Math.random), so server and browser render the same.

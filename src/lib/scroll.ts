@@ -12,5 +12,10 @@ export function scrollToId(id: string) {
   else el.scrollIntoView({ behavior: "smooth" });
 }
 
+/** Phones, tablets and touch screens without a mouse: the light version of the site (the
+ *  `simple:` variant in globals.css is the same test). */
+export const SIMPLE_QUERY = "(max-width: 1023px), (hover: none)";
+export const isSimple = () => typeof window !== "undefined" && window.matchMedia(SIMPLE_QUERY).matches;
+
 export const prefersReducedMotion = () =>
   typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;

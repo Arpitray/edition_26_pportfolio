@@ -1,27 +1,11 @@
 import Hero from "@/components/Hero";
 import ChapterIndex from "@/components/ChapterIndex";
+import AtlasPlate from "@/components/AtlasPlate";
+import AtlasIntro from "@/components/AtlasIntro";
+import ChartBackdrop from "@/components/ChartBackdrop";
+import LogoCloud from "@/components/LogoCloud";
 import { ChapterOpener, Subsection, FeatureList, Tagline, Reveal } from "@/components/Chapter";
-import { WordCloud, ScoreMeter, CostBars, Funnel, ScanReveal, GlowCards, StatPanel } from "@/components/Visuals";
 import { person, about, novafocus, projects, toolkit, education, art } from "@/content/site";
-import { aboutScene } from "@/content/aboutScene";
-
-// Category names from the classify taxonomy, floating in the "Domains, classified" beat.
-const CATEGORIES = [
-  "Social Networks", "Video Streaming", "Online Shopping", "Casino & Betting", "News", "Banking",
-  "Forums & Communities", "AI Tools", "Education", "Cloud & Hosting", "Phishing", "Dating",
-  "Music & Audio", "Search Engines", "Marketplaces", "Cryptocurrency", "Travel", "Sports",
-];
-
-const visualFor = {
-  site: <StatPanel stats={[{ value: 70, suffix: "K", label: "search impressions a day" }]} note="Next.js · Sanity CMS" />,
-  extension: <StatPanel stats={[{ value: 20, suffix: "K+", label: "users" }]} note="Chrome Web Store" />,
-  cloud: <WordCloud words={CATEGORIES} />,
-  meter: <ScoreMeter />,
-  bars: <CostBars />,
-  funnel: <Funnel />,
-  scan: <ScanReveal src={art.pearlEarring.color} />,
-  cards: <GlowCards />,
-};
 
 export default function Home() {
   return (
@@ -31,9 +15,12 @@ export default function Home() {
 
       {/* I · About: its painting tears in under the hero, then the page. */}
       <section id="about">
-        <ChapterOpener title="About" tagline={about.intro} scene={aboutScene} from="image" seed={29} />
-        <div className="bg-paper px-6 py-[14vh] lg:pl-[16rem] md:pr-12">
-          <div className="grid gap-12 md:grid-cols-12">
+        {/* Rembrandt, Aristotle with a Bust of Homer (1653): a thinker in golden light. */}
+        <ChapterOpener title="About" tagline={about.intro} art={art.aristotle} from="image" seed={29} />
+        <div className="relative bg-paper px-6 py-[14vh] lg:pl-[16rem] md:pr-12">
+          {/* Cellarius, the Copernican system (1660), faded behind the text. */}
+          <ChartBackdrop src="/art/backgrounds/cellarius-copernicus.jpg" />
+          <div className="relative grid gap-12 md:grid-cols-12">
             <Reveal className="md:col-span-7">
               <h3 className="text-[clamp(34px,4vw,60px)] leading-[1.02] text-ink"><Tagline text={about.heading} /></h3>
               <div className="mt-10">
@@ -63,10 +50,13 @@ export default function Home() {
 
       {/* II · NovaFocus */}
       <section id="novafocus">
-        <ChapterOpener title={novafocus.title} tagline={novafocus.tagline} art={novafocus.art} drawn={false} blurNote={novafocus.blurNote} seed={13} />
+        <ChapterOpener title={novafocus.title} tagline={novafocus.tagline} art={novafocus.art} scene={novafocus.scene} blurNote={novafocus.blurNote} seed={13} />
+        {/* Six plates from Hevelius' star atlas, three by two; each travels down to its write-up. */}
+        <AtlasIntro tagline="Six things I built at BlockP." plates={novafocus.subsections.map((s) => s.sky)} cols={3}
+          backdrop={{ src: "/art/backgrounds/cellarius-boreale.jpg", alt: "" }} />
         <div className="bg-paper px-6 lg:pl-[16rem] md:pr-12">
           {novafocus.subsections.map((s) => (
-            <Subsection key={s.tagline} {...s} visual={visualFor[s.visual]} />
+            <Subsection key={s.tagline} tagline={s.tagline} label={s.label} body={s.body} visual={<AtlasPlate sky={s.sky} />} />
           ))}
           <FeatureList heading="Also shipped" items={novafocus.alsoShipped} />
         </div>
@@ -74,19 +64,26 @@ export default function Home() {
 
       {/* III · Projects */}
       <section id="projects">
-        <ChapterOpener title={projects.title} tagline={projects.tagline} art={projects.art} seed={41} />
+        {/* No painting here: the four star-atlas plates, two by two, travel down to their projects. */}
+        <AtlasIntro title={projects.title} tagline={projects.tagline} plates={projects.featured.map((p) => p.sky)}
+          backdrop={{ src: "/art/backgrounds/cellarius-scenographia.jpg", alt: "" }} />
         <div className="bg-paper px-6 lg:pl-[16rem] md:pr-12">
-          {projects.featured.map((p) => (
-            <Subsection key={p.label} {...p} />
+          {/* Alternating: text then plate, plate then text. */}
+          {projects.featured.map((p, i) => (
+            <Subsection key={p.label} tagline={p.tagline} label={p.label} body={p.body} link={p.link} visual={<AtlasPlate sky={p.sky} />} flip={i % 2 === 1} />
           ))}
           <FeatureList heading="Also built" items={projects.alsoBuilt} />
         </div>
       </section>
 
       {/* IV · Toolkit */}
-      <section id="toolkit" className="bg-paper px-6 py-[12vh] lg:pl-[16rem] md:pr-12">
-        <h2 className="font-display text-[clamp(56px,10vw,160px)] font-bold leading-[0.85] tracking-[-0.04em] text-ink">Toolkit</h2>
-        <WordCloud words={toolkit} tall />
+      <section id="toolkit" className="relative bg-paper px-6 py-[12vh] lg:pl-[16rem] md:pr-12">
+        {/* Cellarius, the Copernican planisphere (1660), faded behind the logos. */}
+        <ChartBackdrop src="/art/backgrounds/cellarius-planisphaerium.jpg" />
+        <div className="relative">
+          <h2 className="font-display text-[clamp(56px,10vw,160px)] font-bold leading-[0.85] tracking-[-0.04em] text-ink">Toolkit</h2>
+          <LogoCloud items={toolkit.items} also={toolkit.also} />
+        </div>
       </section>
 
       {/* V · Education */}
@@ -100,8 +97,12 @@ export default function Home() {
 
       {/* VI · Contact */}
       <section id="contact">
-        <ChapterOpener title="Contact" tagline="Let’s build something worth measuring." art={art.pearlEarring} seed={67} />
-        <div className="bg-paper px-6 py-[12vh] lg:pl-[16rem] md:pr-12">
+        {/* Velázquez, Juan de Pareja (1650): looking straight at you. */}
+        <ChapterOpener title="Contact" tagline="Let’s build something worth measuring." art={art.pareja} seed={67} />
+        <div className="relative bg-paper px-6 py-[12vh] lg:pl-[16rem] md:pr-12">
+          {/* Cellarius, the southern sky with ships and astronomers (1660), faded behind. */}
+          <ChartBackdrop src="/art/backgrounds/cellarius-australe.jpg" />
+          <div className="relative">
           <a href={`mailto:${person.email}`} className="font-display text-[clamp(28px,4vw,64px)] font-bold tracking-[-0.03em] text-ink underline decoration-magenta decoration-4 underline-offset-8">
             {person.email}
           </a>
@@ -111,7 +112,8 @@ export default function Home() {
             ))}
             <a href="/Arpit_Ray_Resume.pdf" className="rounded-full bg-magenta px-4 py-2 text-white">Download résumé</a>
           </div>
-          <p className="mt-24 font-display text-[11px] text-ink/50">Paintings: Johannes Vermeer, public domain (via Wikimedia Commons).</p>
+          <p className="mt-24 font-display text-[11px] text-ink/50">Paintings: Rembrandt and Diego Velázquez (The Metropolitan Museum of Art), Pieter Bruegel the Elder and Johannes Vermeer, public domain. Star charts: Andreas Cellarius, Harmonia Macrocosmica (1660), and Johannes Hevelius, Firmamentum Sobiescianum (1690). The four project plates were made for this site in the style of Hevelius.</p>
+          </div>
         </div>
       </section>
     </main>

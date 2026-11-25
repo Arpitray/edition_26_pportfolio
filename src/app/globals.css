@@ -11,6 +11,21 @@
   --font-serif: var(--font-serif-face), Georgia, serif;
 }
 
+/* "simple": phones, tablets and any touch screen without a mouse. There the site drops its
+   heavy parts (3D paintings, the hero video, long pinned scrolls, flying plates, the logo
+   cloud's drift) for still images and light fades. "full" is the opposite: the desktop.
+   The same test in JavaScript: isSimple() in lib/scroll.ts. */
+@custom-variant simple {
+  @media (max-width: 1023px), (hover: none) {
+    @slot;
+  }
+}
+@custom-variant full {
+  @media (min-width: 1024px) and (hover: hover) {
+    @slot;
+  }
+}
+
 /* Height of the torn, burnt edges between sections (BurnEdge and tearMask share it). */
 :root { --tear-h: clamp(90px, 12vw, 180px); }
 
@@ -27,6 +42,7 @@ html.lenis, html.lenis body { height: auto; }
 
 /* Interface cards glow softly, as if lit from behind. */
 .glow { box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.25), 0 20px 60px -10px rgba(139, 92, 246, 0.45); }
+
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
