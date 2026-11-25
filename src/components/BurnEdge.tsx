@@ -11,7 +11,8 @@ import type { CSSProperties } from "react";
  * point (from its seed), so no two edges look the same.
  */
 const TILE_RATIO = 3200 / 360;           // the strip's width / height
-const art = (kind: "edge" | "mask", below: boolean) => `url("/art/burn/${kind}-${below ? "below" : "above"}.png")`;
+// The burn is a WebP (colour and alpha); the masks are small PNGs.
+const art = (kind: "edge" | "mask", below: boolean) => `url("/art/burn/${kind}-${below ? "below" : "above"}.${kind === "edge" ? "webp" : "png"}")`;
 const tileSize = `calc(var(--tear-h) * ${TILE_RATIO}) var(--tear-h)`;
 const tileX = (seed: number) => `calc(var(--tear-h) * ${TILE_RATIO} * -${((seed * 0.6180339) % 1).toFixed(4)})`;
 

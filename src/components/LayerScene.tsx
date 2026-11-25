@@ -90,8 +90,10 @@ const ease = (t: number) => t * t * (3 - 2 * t);
  * painting with a depth map, or another layered scene whose pieces move with `nextDetach`.
  */
 export default function LayerScene({
-  background, backgroundVideo, layers, next, trigger, timeline, flashAt, nextTrigger, portrait,
+  background, backgroundVideo, layers, next, trigger, timeline, flashAt, nextTrigger, portrait, onReady,
 }: {
+  /** Called once, when everything has loaded and the first frame is on screen. */
+  onReady?: () => void;
   background: string; backgroundVideo?: string; layers: Layer[];
   /** How the scene re-frames on portrait screens (see Portrait). */
   portrait?: Portrait;
@@ -109,6 +111,8 @@ export default function LayerScene({
   flashAt: { layer: number; u: number; v: number };
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const readyRef = useRef(onReady);
+  readyRef.current = onReady;
 
   useEffect(() => {
     // Phones and tablets get a still image instead (the canvas is hidden there): no WebGL.
@@ -279,6 +283,7 @@ export default function LayerScene({
     // group 0: this scene; group 1: the layered next scene.
     type Placed = { mesh: THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial>; layer: Layer | null; aspect: number; texH: number; group: 0 | 1 };
     let placed: Placed[] = [];
+    let alive = true;
     let nextTextures: THREE.Texture[] = [];
 
     const reduced = prefersReducedMotion();
@@ -486,10 +491,17 @@ export default function LayerScene({
       state.progress = scrub.progress;
       state.nextProgress = nextScrub ? nextScrub.progress : 0;
       Object.assign(state.shown, current());
-      if (visible.isActive) start();
+      // Compile the shaders off the main thread where the browser can
+      // (KHR_parallel_shader_compile), so the page and the loader keep moving meanwhile.
+      renderer.compileAsync(scene, camera).catch(() => {}).then(() => {
+        if (!alive) return;
+        if (visible.isActive) start();
+        requestAnimationFrame(() => requestAnimationFrame(() => readyRef.current?.()));
+      });
     });
 
     return () => {
+      alive = false;
       stop();
       videos.forEach((v) => { v.removeAttribute("src"); v.load(); });
       window.removeEventListener("pointermove", onMouse);

@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { isSimple, prefersReducedMotion } from "@/lib/scroll";
+import { prefersReducedMotion } from "@/lib/scroll";
+import { veilRange } from "@/lib/anim";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16,7 +17,7 @@ gsap.registerPlugin(ScrollTrigger);
  * the paper, with engraved-looking stipple and faint hatching so it still belongs to a 1690
  * plate. Scrolling back lifts it again. It renders only while the card is on screen.
  *
- * Phones and tablets get the same sequence as a light CSS blur instead (no WebGL there).
+ * Desktop only: phones and tablets get a CSS blur instead (LazyVeil in Scenes.tsx).
  */
 
 const vertex = /* glsl */ `
@@ -127,7 +128,7 @@ export default function VeilCanvas({ src, trigger, card }: {
   src: string;
   /** The element whose scroll position drives the veil (the plate's place on the page). */
   trigger: React.RefObject<HTMLElement | null>;
-  /** The card element, for the CSS version on phones and tablets. */
+  /** The card element (used by the CSS version on phones and tablets, in LazyVeil). */
   card: React.RefObject<HTMLElement | null>;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -136,12 +137,7 @@ export default function VeilCanvas({ src, trigger, card }: {
     const el = trigger.current, canvas = canvasRef.current;
     if (!el || !canvas || prefersReducedMotion()) return;
     // The scan reaches the bottom at 85% of the range; the veil then holds.
-    const range = { trigger: el, start: "top 62%", end: "center 38%", scrub: true };
-
-    if (isSimple()) {
-      const tw = gsap.fromTo(card.current, { filter: "blur(0px)" }, { filter: "blur(9px)", ease: "power1.in", scrollTrigger: range });
-      return () => { tw.scrollTrigger?.kill(); tw.kill(); };
-    }
+    const range = veilRange(el);
 
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, premultipliedAlpha: false, antialias: false });
     const scene = new THREE.Scene();

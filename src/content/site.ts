@@ -2,6 +2,7 @@
 import type { Sky, SkyProject } from "@/components/AtlasPlate";
 import type { ToolIcon } from "@/content/toolIcons";
 import type { LayeredScene } from "@/components/LayerScene";
+import type { AlsoItem } from "@/components/AlsoBuilt";
 
 /** A painting and its depth map (made by tools/make-depth.mjs). */
 /** `focus`: the point kept in view when the painting is cropped to the screen (like CSS
@@ -10,7 +11,7 @@ export type Art = { color: string; depth: string; alt: string; focus?: [number, 
 
 const painting = (name: string, alt: string, focus?: [number, number]): Art => ({
   color: `/art/web/${name}.jpg`,
-  depth: `/art/web/${name}-depth.png`,
+  depth: `/art/web/${name}-depth.jpg`,   // greyscale JPEG (tools/optimize-assets.mjs)
   alt,
   focus,
 });
@@ -187,13 +188,25 @@ export const projects = {
       sky: "columbae",
     },
   ] satisfies SkyProject[],
+  // Each with a real engraving chosen for it (The Metropolitan Museum of Art, Open Access;
+  // cropped by tools/make-also.mjs).
   alsoBuilt: [
-    ["Summore", "E-commerce app on React, Supabase and GSAP."],
-    ["CampusTrack", "Campus tracking app built on Next.js."],
-    ["EcoTrace", "Plant identification with the PlantNet API."],
-    ["3DAR", "3D and AR experiments on the web."],
-    ["Exploratory data analysis", "Cleaning, statistics and charts in Pandas, Matplotlib and Seaborn."],
-  ],
+    { name: "AI Interview Coach", text: "Matches a resume to a job with embeddings, then runs a spoken mock interview that asks follow-ups and scores the answers.",
+      stack: "FastAPI · ChromaDB · Whisper · Postgres · Redis", link: "https://github.com/Arpitray/backendResumeAi",
+      print: { src: "/art/also/dente-scholars.webp", alt: "Scholars gathered in debate around an open book, in an engraving by Marco Dente", credit: "Marco Dente, scholars around an open book, c. 1515–27" } },
+    { name: "NewStream", text: "Video rooms in the browser: group calls, screen sharing and a live list of who is in the room.",
+      stack: "Next.js · WebRTC · Socket.io", link: "https://github.com/Arpitray/frontsocket",
+      print: { src: "/art/also/merke-lantern.webp", alt: "A crowd watching figures thrown on the wall by a magic lantern, in a print by Henri Merke", credit: "Henri Merke, A Magic Lantern, 1799" } },
+    { name: "AR business card", text: "Point a phone at a printed card and a 3D card with a walking avatar and contact buttons appears on it, with no app to install.",
+      stack: "MindAR · Three.js · React", link: "https://github.com/Arpitray/3dar",
+      print: { src: "/art/also/durer-lute.webp", alt: "Two men plotting a lute in perspective through a frame with a string, in a woodcut by Albrecht Dürer", credit: "Albrecht Dürer, The Draughtsman of the Lute, 1525" } },
+    { name: "Summore", text: "Online shop with product categories, sign-in, a cart saved to the database and an order flow.",
+      stack: "React · Supabase · GSAP", link: "https://github.com/Arpitray/commerce",
+      print: { src: "/art/also/bosse-gallery.webp", alt: "Shoppers at the stalls of a covered gallery, in an engraving by Abraham Bosse", credit: "Abraham Bosse, The Gallery of the Palace of Justice, c. 1638" } },
+    { name: "EcoTrace", text: "Identifies a plant from a photo, with its species, family and how sure the match is, and keeps a history of finds.",
+      stack: "Next.js · PlantNet API · Supabase", link: "https://github.com/Arpitray/advanceEcoTrace",
+      print: { src: "/art/also/ferrari-florum.webp", alt: "A cluster of trumpet-shaped flowers, in a botanical engraving", credit: "Giovanni Battista Ferrari, De Florum Cultura, 1633" } },
+  ] satisfies AlsoItem[],
 };
 
 // Each with its logo (src/content/toolIcons.ts); the skills with no logo of their own are
@@ -220,5 +233,18 @@ export const education = {
   school: "Jain University",
   degree: "Bachelor of Computer Applications",
   years: "2024 – 2027",
-  detail: "CGPA 7.90 · DBMS, Data Structures & Algorithms, Python, Java, Computer Networks",
+  score: { value: 8.5, label: "SGPA" },
+  // What the degree covers, grouped like the chapters of a book.
+  coursework: [
+    { group: "Programming", subjects: ["Java", "Python", "R"] },
+    { group: "Data", subjects: ["DBMS", "SQL", "NoSQL"] },
+    { group: "Intelligence", subjects: ["Machine Learning", "Artificial Intelligence"] },
+    { group: "Foundations", subjects: ["Data Structures & Algorithms", "Computer Networks"] },
+  ],
+  // The Metropolitan Museum of Art, Open Access (cropped by tools/make-also.mjs).
+  print: {
+    src: "/art/also/durer-jerome.webp",
+    alt: "A scholar writing at his desk in a sunlit study, a lion and a dog asleep in front of him, in an engraving by Albrecht Dürer",
+    credit: "Albrecht Dürer, Saint Jerome in His Study, 1514",
+  },
 };

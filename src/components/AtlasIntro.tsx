@@ -36,6 +36,22 @@ export default function AtlasIntro({ title, tagline, plates, cols = 2, backdrop 
 }) {
   const wrap = useRef<HTMLDivElement>(null);
 
+  // The plates load lazily (they sit far down the page), but on desktop they fly in from this
+  // grid long before their own place is near, so fetch them as soon as the grid comes within
+  // a screen and a half.
+  useEffect(() => {
+    const el = wrap.current;
+    if (!el || isSimple()) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      plates.forEach((sky) => document.querySelectorAll<HTMLImageElement>(`[data-atlas-plate="${sky}"] img`)
+        .forEach((img) => { img.loading = "eager"; }));
+    }, { rootMargin: "150% 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [plates]);
+
   useEffect(() => {
     const el = wrap.current;
     // Phones and tablets: no grid and no journey; the plates simply sit in their places.

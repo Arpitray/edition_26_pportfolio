@@ -3,7 +3,19 @@ import type Lenis from "lenis";
 // The one Lenis instance, so any component can scroll to a chapter smoothly.
 let instance: Lenis | null = null;
 
-export const setLenis = (lenis: Lenis | null) => { instance = lenis; };
+export const setLenis = (lenis: Lenis | null) => {
+  instance = lenis;
+  if (lenis && locked) lenis.stop();
+};
+
+// While the loader is up the page must not scroll. Native scrolling is held by CSS
+// (html:has(#loader) in globals.css); this holds the smooth scrolling too, even if it starts
+// after the loader.
+let locked = false;
+export function lockScroll(on: boolean) {
+  locked = on;
+  if (on) instance?.stop(); else instance?.start();
+}
 
 export function scrollToId(id: string) {
   const el = document.getElementById(id);

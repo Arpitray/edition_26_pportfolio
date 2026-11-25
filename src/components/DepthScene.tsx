@@ -14,12 +14,6 @@ gsap.registerPlugin(ScrollTrigger);
 export type SceneState = { dolly: number; mix: number; etch: number; flash: number };
 export type Timeline = (progress: number, entry: number) => SceneState;
 
-const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
-/** 0 before a, 1 after b, eased in between. */
-export const ramp = (p: number, a: number, b: number) => {
-  const t = clamp01((p - a) / (b - a));
-  return t * t * (3 - 2 * t);
-};
 
 /**
  * Crop a texture like CSS object-fit: cover, for a surface of the given aspect ratio.
@@ -92,6 +86,7 @@ export default function DepthScene({
     const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
     const state = { progress: 0, entry: 1, shown: { dolly: 0, mix: 0, etch: 0, flash: 0 } as SceneState };
     let textures: THREE.Texture[] = [];
+    let alive = true;
     let running = false;
     let frame = 0;
     const clock = new THREE.Clock();
@@ -177,10 +172,12 @@ export default function DepthScene({
       state.entry = arrival.progress;
       // Start already where the scroll is, instead of easing in from zero.
       Object.assign(state.shown, timeline(state.progress, state.entry));
-      if (visible.isActive) start();
+      // Shaders compiled off the main thread where the browser can (see LayerScene).
+      renderer.compileAsync(scene, camera).catch(() => {}).then(() => { if (alive && visible.isActive) start(); });
     });
 
     return () => {
+      alive = false;
       stop();
       window.removeEventListener("pointermove", onMouse);
       window.removeEventListener("resize", onResize);

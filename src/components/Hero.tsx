@@ -3,8 +3,11 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ramp } from "@/components/DepthScene";
-import LayerScene, { type Layer, type LayerTimeline } from "@/components/LayerScene";
+import { ramp } from "@/lib/anim";
+import type { Layer, LayerTimeline } from "@/components/LayerScene";
+import { LazyLayerScene } from "@/components/Scenes";
+import { markReady } from "@/lib/ready";
+import { isSimple } from "@/lib/scroll";
 import { person } from "@/content/site";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -58,6 +61,17 @@ const HERO_PORTRAIT = { x: 0.24, y: -0.5, scale: 0.55 };
 export default function Hero() {
   const section = useRef<HTMLElement>(null);
   const card = useRef<HTMLDivElement>(null);
+  const still = useRef<HTMLImageElement>(null);
+
+  // Phones and tablets: the hero is ready when its still picture is (it may have loaded before
+  // the page's script ran, so check as well as listen).
+  useEffect(() => {
+    const img = still.current;
+    if (!img || !isSimple()) return;
+    const done = () => markReady("hero");
+    if (img.complete) done();
+    else { img.addEventListener("load", done, { once: true }); img.addEventListener("error", done, { once: true }); }
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -74,14 +88,17 @@ export default function Hero() {
     <section id="top" ref={section} className="relative h-[200vh] bg-night simple:h-svh">
       <div className="sticky top-0 h-svh overflow-hidden">
         <div className="absolute inset-0 simple:hidden">
-          <LayerScene background={`${SCENE}/bg.webp`} layers={HERO_LAYERS}
-            trigger={section} timeline={heroTimeline} flashAt={PENCIL_FLASH} portrait={HERO_PORTRAIT} />
+          <LazyLayerScene background={`${SCENE}/bg.webp`} layers={HERO_LAYERS}
+            trigger={section} timeline={heroTimeline} flashAt={PENCIL_FLASH} portrait={HERO_PORTRAIT}
+            onReady={() => markReady("hero")} hero />
         </div>
         {/* Phones and tablets: the same scene as a still (captured from it), tall or wide to
-            match how the screen is held. */}
+            match how the screen is held. On desktop (where it is hidden) the first source is an
+            empty pixel, so the still is never downloaded there. */}
         <picture className="absolute inset-0 hidden simple:block">
+          <source media="(min-width: 1024px) and (hover: hover)" srcSet="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
           <source media="(orientation: landscape)" srcSet={`${SCENE}/hero-wide.webp`} />
-          <img src={`${SCENE}/hero-tall.webp`} alt="A young engineer at his desk, sketching an app on a drafting board, his code on a monitor beside him"
+          <img ref={still} src={`${SCENE}/hero-tall.webp`} alt="A young engineer at his desk, sketching an app on a drafting board, his code on a monitor beside him"
             fetchPriority="high" className="h-full w-full object-cover object-bottom" />
         </picture>
 

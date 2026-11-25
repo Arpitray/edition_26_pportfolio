@@ -3,8 +3,10 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import DepthScene, { ramp, type Timeline } from "@/components/DepthScene";
-import LayerScene, { type LayeredScene, type LayerTimeline } from "@/components/LayerScene";
+import type { Timeline } from "@/components/DepthScene";
+import type { LayeredScene, LayerTimeline } from "@/components/LayerScene";
+import { LazyDepthScene, LazyLayerScene } from "@/components/Scenes";
+import { ramp } from "@/lib/anim";
 import BurnEdge, { tearMask } from "@/components/BurnEdge";
 import { prefersReducedMotion } from "@/lib/scroll";
 import type { Art } from "@/content/site";
@@ -93,10 +95,10 @@ export function ChapterOpener({ title, tagline, art, scene, blurNote, from = "va
         <div ref={painting} className="absolute inset-0">
           <div className="absolute inset-0 simple:hidden">
             {scene ? (
-              <LayerScene background={scene.background} backgroundVideo={scene.backgroundVideo} layers={scene.layers} trigger={wrap}
+              <LazyLayerScene background={scene.background} backgroundVideo={scene.backgroundVideo} layers={scene.layers} trigger={wrap}
                 timeline={layeredTimeline} flashAt={NO_FLASH} portrait={scene.portrait} />
             ) : art && (
-              <DepthScene art={art} trigger={wrap} timeline={drawn ? openerTimeline : plainTimeline} />
+              <LazyDepthScene art={art} trigger={wrap} timeline={drawn ? openerTimeline : plainTimeline} />
             )}
           </div>
           {/* Phones and tablets: the painting as a plain image, cropped around its focus. */}

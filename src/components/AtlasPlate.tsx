@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "@/lib/scroll";
-import VeilCanvas from "@/components/VeilCanvas";
+import { LazyVeil } from "@/components/Scenes";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -106,17 +106,17 @@ export default function AtlasPlate({ sky }: { sky: Sky }) {
         <div ref={card} className="absolute inset-0 overflow-hidden bg-[#efe9db] shadow-[0_28px_60px_-28px_rgba(17,17,17,0.55)] transition-shadow duration-500 hover:shadow-[0_44px_80px_-30px_rgba(17,17,17,0.6)]">
           {/* The whole plate, faded to an old print. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`/art/plates/${sky}.webp`} alt="" loading="eager" draggable={false}
+          <img src={`/art/plates/${sky}.webp`} alt="" loading="lazy" decoding="async" draggable={false}
             className="absolute inset-0 h-full w-full select-none [filter:grayscale(1)_sepia(0.18)_contrast(0.78)_brightness(1.07)]" />
           {/* The figure itself, in its hand-painted colour, floating a little above the paper. */}
           <div ref={lift} className="absolute inset-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img ref={figure} src={`/art/plates/${sky}-figure.webp`} loading="eager" draggable={false}
+            <img ref={figure} src={`/art/plates/${sky}-figure.webp`} loading="lazy" decoding="async" draggable={false}
               alt={plate.alt}
               className="absolute inset-0 h-full w-full select-none opacity-0 [filter:drop-shadow(0_6px_8px_rgba(40,25,10,0.28))]" />
           </div>
           {/* The NudeNet plate: scanned and veiled in mist as it reaches the middle of the screen. */}
-          {plate.veil && <VeilCanvas src={`/art/plates/${sky}.webp`} trigger={root} card={card} />}
+          {plate.veil && <LazyVeil src={`/art/plates/${sky}.webp`} trigger={root} card={card} />}
           {/* Lamp light on the paper, following the pointer. */}
           <div ref={glare} className="pointer-events-none absolute inset-0 opacity-0 mix-blend-soft-light [background:radial-gradient(circle_at_var(--gx,50%)_var(--gy,50%),rgba(255,248,230,0.75),rgba(255,248,230,0)_55%)]" />
         </div>
