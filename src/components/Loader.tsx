@@ -15,13 +15,15 @@ import { lockScroll, prefersReducedMotion } from "@/lib/scroll";
  * The burn is one small WebGL shader (no three.js, so it costs almost nothing to download, on
  * phones too). Before any script runs the sheet is already there with a faint warm scorch in
  * the middle (CSS), so the very first paint is right. It waits for the fonts and for the hero
- * to say it is ready (lib/ready.ts), at least MIN_MS so it never just flickers, at most MAX_MS
- * so a slow image can never hold the site hostage. While it is up the page cannot scroll
- * (globals.css, and lockScroll for the smooth scrolling).
+ * to say it is ready (lib/ready.ts), and at least MIN_MS so it never just flickers. However
+ * slow the connection, it opens only once the hero is ready; the hero reports ready even when a
+ * picture fails or there is no WebGL. SAFETY_MS is only for a failure nothing reports (say the
+ * scene's script never arrives), so the site can never stay locked behind the sheet. While it
+ * is up the page cannot scroll (globals.css, and lockScroll for the smooth scrolling).
  */
 
 const MIN_MS = 1400;
-const MAX_MS = 7000;
+const SAFETY_MS = 45000;
 // The burn's centre, as fractions of the screen from the left and the top.
 const CENTRE = [0.5, 0.44];
 
@@ -156,7 +158,7 @@ export default function Loader() {
     let shown = 0, finished = false;
     const tick = () => {
       const t = performance.now() - t0;
-      const ready = (fonts && hero && t > MIN_MS) || t > MAX_MS;
+      const ready = (fonts && hero && t > MIN_MS) || t > SAFETY_MS;
       // Each thing that has arrived counts; time fills in slowly toward (never past) 90%.
       const real = 0.15 + (fonts ? 0.2 : 0) + (hero ? 0.6 : 0);
       const creep = Math.min(0.9, real + 0.2 * (1 - Math.exp(-t / 2500)));

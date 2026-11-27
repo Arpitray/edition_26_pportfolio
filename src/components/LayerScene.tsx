@@ -119,7 +119,14 @@ export default function LayerScene({
     if (isSimple()) return;
     const canvas = canvasRef.current!;
     const section = trigger.current!;
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
+    } catch {
+      // No WebGL here: nothing to wait for, so the loader must not either.
+      readyRef.current?.();
+      return;
+    }
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(FOV, 1, 0.05, 20);
@@ -127,10 +134,16 @@ export default function LayerScene({
     const visibleHeight = (z: number) => (2 * (D - z)) / D;
 
     const loader = new THREE.TextureLoader();
+    // A picture that fails to load becomes an empty pixel, so the scene (and the loader waiting
+    // on it) still finishes instead of waiting forever.
     const load = (url: string, colour = true) => new Promise<THREE.Texture>((resolve) => loader.load(url, (t) => {
       t.colorSpace = colour ? THREE.SRGBColorSpace : THREE.NoColorSpace;
       t.anisotropy = renderer.capabilities.getMaxAnisotropy();
       resolve(t);
+    }, undefined, () => {
+      const empty = new THREE.DataTexture(new Uint8Array([0, 0, 0, 0]), 1, 1);
+      empty.needsUpdate = true;
+      resolve(empty);
     }));
 
     const resolution = new THREE.Vector2();
@@ -231,12 +244,21 @@ export default function LayerScene({
         }
       }
     };
-    const loadVideo = (url: string, still: string) => new Promise<THREE.Texture>((resolve) => {
+    // A clip is downloaded once and shared by both copies and the thumbnail scan; three video
+    // elements on the same address would otherwise each fetch it, all at the same time.
+    const objectUrls: string[] = [];
+    const clipUrl = (url: string) => fetch(url)
+      .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.blob(); })
+      .then((blob) => { const u = URL.createObjectURL(blob); objectUrls.push(u); return u; })
+      .catch(() => url);
+    /** The clip as a looping texture, or null when it cannot play (the still then stays). */
+    const loadVideo = (url: string) => clipUrl(url).then((src) => new Promise<THREE.VideoTexture | null>((resolve) => {
+      if (!alive) { resolve(null); return; }
       const copy = () => {
         const v = document.createElement("video");
         v.muted = true; v.playsInline = true; v.preload = "auto";
         v.setAttribute("playsinline", "");
-        v.src = url;
+        v.src = src;
         videos.push(v);
         return v;
       };
@@ -248,11 +270,11 @@ export default function LayerScene({
         const loop: VideoLoop = { v: [a, b], t: [ta, tb], front: 0, fadeStart: -1, pending: false, thumbs: [], material: null };
         loops.push(loop);
         ta.userData.loop = loop;
-        scanThumbs(url, loop).catch(() => {});
+        scanThumbs(src, loop).catch(() => {});
         resolve(ta);
       }, { once: true });
-      a.addEventListener("error", () => load(still).then(resolve), { once: true });
-    });
+      a.addEventListener("error", () => resolve(null), { once: true });
+    }));
 
     // The next scene, behind everything, revealed as this one fades. As a single painting it is
     // one surface pushed into 3D by its depth map; as layers it is built like this scene.
@@ -440,13 +462,35 @@ export default function LayerScene({
     window.addEventListener("pointermove", onMouse);
     window.addEventListener("resize", onResize);
 
-    const loadLayer = (l: Layer) => (l.video && !reduced ? loadVideo(l.video, l.src) : load(l.src));
+    // Every video layer opens on its still, so the scene is ready (and the loader can lift) as
+    // soon as the pictures are in; the clips download afterwards and take over (playVideos).
+    const loadLayer = (l: Layer) => load(l.src);
     const nextLoads = !next ? []
       : "layers" in next ? [load(next.background), ...next.layers.map(loadLayer)]
       : [load(next.color), load(next.depth, false)];
 
-    const backgroundLoad = backgroundVideo && !reduced ? loadVideo(backgroundVideo, background) : load(background);
-    Promise.all([backgroundLoad, ...layers.map(loadLayer), ...nextLoads]).then((textures) => {
+    /** Swaps each video layer's still for its clip once the clip can play. */
+    const playVideos = () => {
+      if (reduced) return;
+      for (const p of placed) {
+        const url = p.layer ? p.layer.video : (p.group === 0 ? backgroundVideo : undefined);
+        if (!url) continue;
+        loadVideo(url).then((tex) => {
+          if (!tex || !alive) return;
+          const mat = p.mesh.material;
+          const still = mat.uniforms.uMap.value as THREE.Texture;
+          const loop = tex.userData.loop as VideoLoop;
+          loop.material = mat;
+          mat.uniforms.uMap.value = tex;
+          mat.uniforms.uMap2.value = loop.t[1];
+          mat.uniforms.uBlend.value = 0;
+          if (running) loop.v[loop.front].play().catch(() => {});
+          still.dispose();
+        });
+      }
+    };
+
+    Promise.all([load(background), ...layers.map(loadLayer), ...nextLoads]).then((textures) => {
       const [bgTex, ...rest] = textures;
       const layerTextures = rest.slice(0, layers.length);
       const nextLoaded = rest.slice(layers.length);
@@ -497,6 +541,7 @@ export default function LayerScene({
         if (!alive) return;
         if (visible.isActive) start();
         requestAnimationFrame(() => requestAnimationFrame(() => readyRef.current?.()));
+        playVideos();
       });
     });
 
@@ -504,6 +549,7 @@ export default function LayerScene({
       alive = false;
       stop();
       videos.forEach((v) => { v.removeAttribute("src"); v.load(); });
+      objectUrls.forEach((u) => URL.revokeObjectURL(u));
       window.removeEventListener("pointermove", onMouse);
       window.removeEventListener("resize", onResize);
       scrub.kill();

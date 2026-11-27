@@ -49,7 +49,7 @@ export const person = {
   links: {
     github: "https://github.com/Arpitray",
     linkedin: "https://linkedin.com/in/arpit-arjun-ray",
-    site: "https://arpitray.me",
+    site: "https://arpitray.in",
   },
 };
 
@@ -91,17 +91,23 @@ export const novafocus = {
     background: "/art/scenes/feast/bg.webp",
     layers: [
       // The child on the floor, eyes on her phone: lifts and drifts toward you.
-      { src: "/art/scenes/feast/child.webp", anchor: "background", x: 0.3506, y: 0.8733, h: 0.2534, z: 0.06,
-        detach: { x: 0.05, y: 0.1, z: 0.3, rot: -0.04, at: 0 } },
+      {
+        src: "/art/scenes/feast/child.webp", anchor: "background", x: 0.3506, y: 0.8733, h: 0.2534, z: 0.06,
+        detach: { x: 0.05, y: 0.1, z: 0.3, rot: -0.04, at: 0 }
+      },
       // The bagpiper: comes straight toward you out of the painting. Coming closer also pushes
       // him outward on screen; the small shift right holds him over his own spot, so the gap
       // he leaves in the painting stays hidden behind him.
-      { src: "/art/scenes/feast/piper.webp", anchor: "background", x: 0.2469, y: 0.4501, h: 0.6008, z: 0.1,
-        detach: { x: 0.08, y: 0.01, z: 0.34, rot: 0, at: 0.1 } },
+      {
+        src: "/art/scenes/feast/piper.webp", anchor: "background", x: 0.2469, y: 0.4501, h: 0.6008, z: 0.1,
+        detach: { x: 0.08, y: 0.01, z: 0.34, rot: 0, at: 0.1 }
+      },
       // The two men carrying the tray of phones and the laptop: they walk on to the right,
       // the way they are already heading, at the same depth (no coming forward).
-      { src: "/art/scenes/feast/carriers.webp", anchor: "background", x: 0.6826, y: 0.6358, h: 0.6267, z: 0.08,
-        detach: { x: 0.16, y: 0, z: 0, rot: 0, at: 0.05 } },
+      {
+        src: "/art/scenes/feast/carriers.webp", anchor: "background", x: 0.6826, y: 0.6358, h: 0.6267, z: 0.08,
+        detach: { x: 0.16, y: 0, z: 0, rot: 0, at: 0.05 }
+      },
     ],
   } satisfies LayeredScene,
   blurNote: "Blurred, the way BlockP hides an image until its on-device NudeNet model has checked it.",
@@ -191,21 +197,31 @@ export const projects = {
   // Each with a real engraving chosen for it (The Metropolitan Museum of Art, Open Access;
   // cropped by tools/make-also.mjs).
   alsoBuilt: [
-    { name: "AI Interview Coach", text: "Matches a resume to a job with embeddings, then runs a spoken mock interview that asks follow-ups and scores the answers.",
+    {
+      name: "AI Interview Coach", text: "Matches a resume to a job with embeddings, then runs a spoken mock interview that asks follow-ups and scores the answers.",
       stack: "FastAPI · ChromaDB · Whisper · Postgres · Redis", link: "https://github.com/Arpitray/backendResumeAi",
-      print: { src: "/art/also/dente-scholars.webp", alt: "Scholars gathered in debate around an open book, in an engraving by Marco Dente", credit: "Marco Dente, scholars around an open book, c. 1515–27" } },
-    { name: "NewStream", text: "Video rooms in the browser: group calls, screen sharing and a live list of who is in the room.",
+      print: { src: "/art/also/dente-scholars.webp", alt: "Scholars gathered in debate around an open book, in an engraving by Marco Dente", credit: "Marco Dente, scholars around an open book, c. 1515–27" }
+    },
+    {
+      name: "NewStream", text: "Video rooms in the browser: group calls, screen sharing and a live list of who is in the room.",
       stack: "Next.js · WebRTC · Socket.io", link: "https://github.com/Arpitray/frontsocket",
-      print: { src: "/art/also/merke-lantern.webp", alt: "A crowd watching figures thrown on the wall by a magic lantern, in a print by Henri Merke", credit: "Henri Merke, A Magic Lantern, 1799" } },
-    { name: "AR business card", text: "Point a phone at a printed card and a 3D card with a walking avatar and contact buttons appears on it, with no app to install.",
+      print: { src: "/art/also/merke-lantern.webp", alt: "A crowd watching figures thrown on the wall by a magic lantern, in a print by Henri Merke", credit: "Henri Merke, A Magic Lantern, 1799" }
+    },
+    {
+      name: "AR business card", text: "Point a phone at a printed card and a 3D card with a walking avatar and contact buttons appears on it, with no app to install.",
       stack: "MindAR · Three.js · React", link: "https://github.com/Arpitray/3dar",
-      print: { src: "/art/also/durer-lute.webp", alt: "Two men plotting a lute in perspective through a frame with a string, in a woodcut by Albrecht Dürer", credit: "Albrecht Dürer, The Draughtsman of the Lute, 1525" } },
-    { name: "Summore", text: "Online shop with product categories, sign-in, a cart saved to the database and an order flow.",
+      print: { src: "/art/also/durer-lute.webp", alt: "Two men plotting a lute in perspective through a frame with a string, in a woodcut by Albrecht Dürer", credit: "Albrecht Dürer, The Draughtsman of the Lute, 1525" }
+    },
+    {
+      name: "Summore", text: "Online shop with product categories, sign-in, a cart saved to the database and an order flow.",
       stack: "React · Supabase · GSAP", link: "https://github.com/Arpitray/commerce",
-      print: { src: "/art/also/bosse-gallery.webp", alt: "Shoppers at the stalls of a covered gallery, in an engraving by Abraham Bosse", credit: "Abraham Bosse, The Gallery of the Palace of Justice, c. 1638" } },
-    { name: "EcoTrace", text: "Identifies a plant from a photo, with its species, family and how sure the match is, and keeps a history of finds.",
+      print: { src: "/art/also/bosse-gallery.webp", alt: "Shoppers at the stalls of a covered gallery, in an engraving by Abraham Bosse", credit: "Abraham Bosse, The Gallery of the Palace of Justice, c. 1638" }
+    },
+    {
+      name: "EcoTrace", text: "Identifies a plant from a photo, with its species, family and how sure the match is, and keeps a history of finds.",
       stack: "Next.js · PlantNet API · Supabase", link: "https://github.com/Arpitray/advanceEcoTrace",
-      print: { src: "/art/also/ferrari-florum.webp", alt: "A cluster of trumpet-shaped flowers, in a botanical engraving", credit: "Giovanni Battista Ferrari, De Florum Cultura, 1633" } },
+      print: { src: "/art/also/ferrari-florum.webp", alt: "A cluster of trumpet-shaped flowers, in a botanical engraving", credit: "Giovanni Battista Ferrari, De Florum Cultura, 1633" }
+    },
   ] satisfies AlsoItem[],
 };
 
