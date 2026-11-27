@@ -24,13 +24,22 @@ export const layerFragment = /* glsl */ `
   uniform vec2 uFlashAt;
   uniform float uKey;          // 1: made on flat green, 2: on flat blue, 3: on any green-to-blue
                                // screen (one that changes colour during the clip); keyed out here
+  uniform float uVideo;        // 1 while the layer shows its clip (see fetch)
   varying vec2 vUv;
+
+  vec3 srgbToLinear(vec3 c) {
+    return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(0.04045, c));
+  }
 
   // The layer's colour; on a green-screen layer the green becomes transparent, and the green
   // spill on the edges (hair, sleeves) is pulled back to neutral.
   vec4 fetch(vec2 uv) {
     vec4 c = texture2D(uMap, uv);
     if (uBlend > 0.001) c = mix(c, texture2D(uMap2, uv), uBlend);
+    // three.js uploads video frames as they are (sRGB) and decodes them only in its own
+    // materials; pictures arrive already decoded. Without this the clip comes out washed out
+    // next to its own still.
+    if (uVideo > 0.5) c.rgb = srgbToLinear(c.rgb);
     return c;
   }
 

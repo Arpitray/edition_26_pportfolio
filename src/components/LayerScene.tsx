@@ -154,7 +154,7 @@ export default function LayerScene({
     const layerMaterial = (map: THREE.Texture, glitter: number, layer: Layer | null) => new THREE.ShaderMaterial({
       vertexShader: layerVertex, fragmentShader: layerFragment, transparent: true, depthWrite: false,
       uniforms: {
-        ...shared, uMap: { value: map }, uMap2: { value: map }, uBlend: { value: 0 },
+        ...shared, uMap: { value: map }, uMap2: { value: map }, uBlend: { value: 0 }, uVideo: { value: 0 },
         uTexel: { value: new THREE.Vector2() }, uOpacity: { value: 1 }, uGlitter: { value: glitter },
         uKey: { value: layer?.key ? { green: 1, blue: 2, screen: 3 }[layer.key] : 0 },
         uGrade: { value: new THREE.Vector3(layer?.grade?.exposure ?? 1, layer?.grade?.contrast ?? 1, layer?.grade?.saturation ?? 1) },
@@ -484,6 +484,7 @@ export default function LayerScene({
           mat.uniforms.uMap.value = tex;
           mat.uniforms.uMap2.value = loop.t[1];
           mat.uniforms.uBlend.value = 0;
+          mat.uniforms.uVideo.value = 1;
           if (running) loop.v[loop.front].play().catch(() => {});
           still.dispose();
         });
