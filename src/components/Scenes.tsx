@@ -20,7 +20,11 @@ gsap.registerPlugin(ScrollTrigger);
  * has lifted, so the hero has the network and the graphics card to itself. Each wrapper holds
  * the piece's place with an empty box until then.
  */
-const LayerScene = dynamic(() => import("@/components/LayerScene"), { ssr: false });
+const importLayerScene = () => import("@/components/LayerScene");
+// On desktop the hero needs this straight away: start the download as soon as this script
+// runs, instead of after the page has hydrated and the hero has mounted.
+if (typeof window !== "undefined" && !isSimple()) importLayerScene().catch(() => {});
+const LayerScene = dynamic(importLayerScene, { ssr: false });
 const DepthScene = dynamic(() => import("@/components/DepthScene"), { ssr: false });
 const VeilCanvas = dynamic(() => import("@/components/VeilCanvas"), { ssr: false });
 

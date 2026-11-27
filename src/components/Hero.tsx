@@ -41,6 +41,7 @@ const SCENE = "/art/scenes/hero";
  * apart (`at` staggers the start, so things lift off one by one).
  */
 const BUILDER = { x: 0.02, y: -0.05, h: 0.94, aspect: 1248 / 704 };
+const FULL_QUERY = "(min-width: 1024px) and (hover: hover)";   // desktop: the opposite of SIMPLE_QUERY
 const PENCIL = { u: 0.781, v: 0.511 };  // the pencil tip on the drafting board, in the video frame
 
 const HERO_LAYERS: Layer[] = [
@@ -87,6 +88,10 @@ export default function Hero() {
   return (
     <section id="top" ref={section} className="relative h-[200vh] bg-night simple:h-svh">
       <div className="sticky top-0 h-svh overflow-hidden">
+        {/* Desktop: the scene's two pictures start downloading with the page itself, not after
+            the 3D script has arrived (the same CORS mode the 3D loader uses, so one download). */}
+        <link rel="preload" as="image" href={`${SCENE}/bg.webp`} media={FULL_QUERY} crossOrigin="anonymous" fetchPriority="high" />
+        <link rel="preload" as="image" href={`${SCENE}/figure3-still.webp`} media={FULL_QUERY} crossOrigin="anonymous" fetchPriority="high" />
         <div className="absolute inset-0 simple:hidden">
           <LazyLayerScene background={`${SCENE}/bg.webp`} layers={HERO_LAYERS}
             trigger={section} timeline={heroTimeline} flashAt={PENCIL_FLASH} portrait={HERO_PORTRAIT}
